@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>年輪的故事-樹輪年代學｜左右版面 v5（加入圖片列）</title>
+<style>
+  :root{
+    --ink:#1f2937; --muted:#64748b; --bg:#f7fafc; --card:#ffffff; --brand:#2563eb;
+    --ok-bg:#ecfdf5; --ok-br:#10b981; --ng-bg:#fff1f2; --ng-br:#ef4444;
+    --ask-bg:#fff7ed; --ask-br:#fdba74; --ask-border:#fed7aa;
+  }
+  html,body{height:100%}
+  body{margin:0; font-family:"Microsoft JhengHei",system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans TC",sans-serif; color:var(--ink); background:var(--bg); line-height:1.7;}
+  .container{max-width:1100px; margin:0 auto; padding:24px 16px 120px;}
+  h1{font-size:clamp(22px,3.4vw,32px); margin:4px 0 6px; text-align:center;}
+  .subtitle{color:var(--muted); margin-bottom:16px; text-align:center;}
+  .card{background:var(--card); border:1px solid #e5e7eb; border-radius:16px; padding:16px; box-shadow:0 1px 0 rgba(0,0,0,.03);}
+  .card + .card{margin-top:14px}
+  .section-title{font-weight:800; font-size:18px; margin:0 0 10px;}
+
+  /* 學生資料 */
+  .fields{ display:flex; flex-wrap:wrap; gap:18px 28px; align-items:flex-start; }
+  .field{ flex:1 1 260px; min-width:240px; }
+  .field label{display:block; font-weight:700; margin-bottom:6px}
+  input[type="text"], input[type="number"]{
+    width:100%; padding:11px 12px; border:1px solid #cbd5e1; border-radius:12px; font-size:15px; background:#fff; box-sizing:border-box;
+  }
+  #stu-card{ margin-bottom:18px; }
+
+  /* === 左右兩欄格線（文本左／問題右；第5段全寬）=== */
+  .lr-grid{
+    display:grid;
+    grid-template-columns: minmax(0,1.6fr) minmax(320px,520px);
+    grid-template-areas:
+      "p1  q1"
+      "p23 q2"
+      "imgs imgs"   /* ← 新增圖片列，跨兩欄 */
+      "p4  q3"
+      "p5  p5";
+    gap: 20px;
+    align-items: stretch; /* 同列等高 */
+  }
+  .p1{grid-area:p1;} .q1{grid-area:q1;}
+  .p23{grid-area:p23;} .q2{grid-area:q2;}
+  .p4{grid-area:p4;} .q3{grid-area:q3;}
+  .p5{grid-area:p5;}
+  .imgs{grid-area:imgs;}
+
+  /* 文本卡與問題卡：統一內距＆讓內容填滿高度 */
+  .text.card, .question.card{ padding:16px; display:flex; flex-direction:column; }
+  .question{ max-width:520px; justify-self:start; }
+
+  /* 右側問題卡內層 */
+  .ask{ margin-top:0; padding:0; border-radius:14px; border:1px solid var(--ask-border); background:var(--ask-bg); overflow:hidden; display:flex; flex-direction:column; flex:1; }
+  .ask-inner{ padding:16px 16px 14px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .ask h4{margin:0; font-size:18px;}
+  .prompt{ margin:0; }
+  .textarea-wrap{ background:#fff; border:1px solid #f59e0b66; border-radius:12px; padding:8px; box-sizing:border-box; }
+  textarea{ display:block; width:100%; min-height:120px; border:0; outline:0; resize:vertical; font-size:15px; background:transparent; }
+
+  details.tips{background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:8px 12px;}
+  details.tips summary{cursor:pointer; font-weight:800; color:#334155}
+  details.tips ul{margin:8px 0 0 18px}
+  details.tips li{margin:4px 0}
+
+  .center{display:flex; justify-content:center; align-items:center; gap:10px}
+  .btn{appearance:none; border:1px solid #cbd5e1; background:#fff; border-radius:999px; padding:10px 16px; font-weight:800; cursor:pointer;}
+  .btn.primary{background:var(--brand); color:#fff; border-color:transparent;}
+  .btn[disabled]{opacity:.6; cursor:not-allowed}
+  .feedback{display:none; margin-top:6px; padding:10px 12px; border-radius:12px; border:2px solid transparent;}
+  .feedback.correct{display:block; background:var(--ok-bg); border-color:var(--ok-br)}
+  .feedback.incorrect{display:block; background:var(--ng-bg); border-color:var(--ng-br)}
+  .tag{display:inline-block; padding:2px 8px; font-size:12px; color:#64748b; border:1px solid #e5e7eb; border-radius:999px; margin-left:8px}
+
+  /* 關鍵字著色 */
+  .kw1{color:#0ea5e9; font-weight:700}
+  .kw2{color:#8b5cf6; font-weight:700}
+  .kw3{color:#16a34a; font-weight:700}
+  .kw4{color:#f97316; font-weight:700}
+  .kw5{color:#ef4444; font-weight:700}
+  .kw6{color:#a16207; font-weight:700}
+
+  /* 圖片列：左右排列、滿版自適應；小螢幕改縱向 */
+  .media-two{ padding:12px; }
+  .media-two .pair{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+  }
+  .media-two img{
+    width:100%; height:auto; display:block;
+    border-radius:12px; border:1px solid #e5e7eb; background:#fff;
+  }
+
+  /* 頁尾導覽 */
+  .footer{position:fixed; inset:auto 0 0 0; background:rgba(255,255,255,.92); border-top:1px solid #e5e7eb; backdrop-filter:saturate(1.2) blur(6px);}
+  .footer-inner{max-width:1100px; margin:0 auto; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;}
+  .nav a{padding:10px 14px; border-radius:999px; border:1px solid #cbd5e1; background:#fff; text-decoration:none; color:var(--ink); font-weight:800;}
+  .nav a.next{background:var(--brand); color:#fff; border-color:transparent;}
+  .nav a.disabled{pointer-events:none; opacity:.45; background:#e5e7eb; color:#6b7280; border-color:transparent;}
+  .muted{color:#6b7280}
+
+  /* 小螢幕堆疊 */
+  @media (max-width: 760px){
+    .lr-grid{
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "p1" "q1"
+        "p23" "q2"
+        "imgs"
+        "p4" "q3"
+        "p5";
+    }
+    .question{ max-width:100%; }
+    .media-two .pair{ grid-template-columns: 1fr; }
+  }
+
+  /* 強制置中標題，移除小字（副標與標籤） */
+  h1{ text-align:center !important; }
+  .subtitle, .tag{ display:none !important; }
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>年輪的故事-樹輪年代學 <span class="tag">自然｜國中</span></h1>
+    <div class="subtitle">請先填寫個人資訊，再閱讀文本並完成 3 題討論問題。全部題目皆答完後，右下「下一頁 →」會解鎖。</div>
+
+    <!-- 學生資料 -->
+    <div class="card" id="stu-card">
+      <div class="section-title">學生資訊</div>
+      <div class="fields">
+        <div class="field"><label for="cls">班級</label><input id="cls" type="text" placeholder="例：701"></div>
+        <div class="field"><label for="no">座號</label><input id="no" type="text" inputmode="numeric" placeholder="例：12"></div>
+        <div class="field"><label for="name">姓名</label><input id="name" type="text" placeholder="例：王小明"></div>
+      </div>
+      <div class="muted" style="margin-top:8px">＊會連同作答一併送出；本機暫存避免誤關視窗遺失。</div>
+    </div>
+
+    <!-- 左右兩欄主體 -->
+    <div class="lr-grid">
+
+      <!-- 第一段（左） -->
+      <section class="card text p1" id="sec1-text">
+        <div class="section-title">名琴與年代</div>
+        <p>
+          近些年來世界古典<span class="kw4">提琴</span>拍賣價格驚人，讓人們看到了收藏的價值。如阿馬蒂家族、安東尼奧·
+          <span class="kw6">斯特拉迪瓦里</span>、<span class="kw6">瓜爾內裡</span>家族、施泰納、瓜達尼尼等著名提琴大師製作的提琴價格非常昂貴。
+          而這些名琴幾乎都是在十八世紀初（<span class="kw5">西元1690年至1750年</span>）製作完成的。
+        </p>
+      </section>
+
+      <!-- 問題一（右） -->
+      <section class="card question q1" id="sec1-ask">
+        <div class="ask">
+          <div class="ask-inner">
+            <h4>討論問題 1</h4>
+            <p class="prompt">為什麼目前認為最好的提琴皆是在 <span class="kw5">1690–1750</span> 年間製作？以現代的科學與工藝，真的做不出更好的琴嗎？</p>
+            <div class="textarea-wrap">
+              <textarea id="q1" placeholder="請以完整語句回答（建議觸及：氣候/年輪/木材密度/生長速度等）"></textarea>
+            </div>
+            <details class="tips">
+              <summary>💡 建議與方向（可展開）</summary>
+              <ul>
+                <li>回顧文本指出的 <span class="kw2">太陽黑子偏低</span> 與 <span class="kw3">氣溫下降</span> → 樹木<span class="kw3">生長緩慢</span>。</li>
+                <li>慢生長 → <span class="kw1">年輪</span>較窄、<span class="kw4">木材</span>更緻密、強韌；有利聲學共鳴。</li>
+                <li>比較「材料條件」與「工藝技術」：即使工藝進步，若材料（樹齡/林地氣候/乾燥熟成）不同，聲音也可能不同。</li>
+              </ul>
+            </details>
+            <div id="fb1" class="feedback" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第二＋三段（左） -->
+      <section class="card text p23" id="sec23-text">
+        <div class="section-title">從天文到樹輪年代學</div>
+        <p>
+          關於這個問題，科學家提出不同看法。這是一個跟<span class="kw1">年輪（樹輪）</span>有關的故事。
+          1984年，天文學家<span class="kw6">帕西瓦爾·羅威爾</span>指派天文學家<span class="kw6">安德魯·道格拉斯</span>（A. E. Douglass），
+          前往<span class="kw6">亞利桑那州旗竿市</span>建立天文台。道格拉斯發現用來建造天文臺的木材橫剖面上有相同寬度的樹輪；
+          身為天文學家的他，為了證實<span class="kw2">太陽黑子 11 年週期</span>，意外發現當地樹輪寬窄也有類似<span class="kw2">11 年周期</span>的變化，
+          便聯想到樹輪可能反映<span class="kw3">氣候變化</span>，因而建立<span class="kw1">樹輪學／樹輪年代學</span>的基本原理與方法，奠基了後續系統研究。
+        </p>
+
+        <div class="section-title" style="margin-top:auto">低日斑期、氣溫與名琴木材</div>
+        <p>
+          科學家發現，約在 <span class="kw5">1645–1715</span> 年，<span class="kw2">太陽黑子活動</span>非常罕見；
+          從近一千年<span class="kw3">地表氣溫</span>變化資料來看，約在 <span class="kw5">1650–1750</span> 年間全球氣溫下降。
+          當時樹木<span class="kw3">生長緩慢</span>，樹輪顏色較深、質地緊密、材質強韌，正是製作<span class="kw4">提琴</span>的好<span class="kw4">木材</span>。
+          即使現在太陽黑子也曾處於活動罕見時期，但<span class="kw3">地表溫度</span>卻未相同下降。
+        </p>
+      </section>
+
+      <!-- 問題二（右） -->
+      <section class="card question q2" id="sec3-ask">
+        <div class="ask">
+          <div class="ask-inner">
+            <h4>討論問題 2</h4>
+            <p class="prompt">為什麼同樣處於<span class="kw2">太陽黑子活動罕見</span>時期，現今的溫度卻沒有像 <span class="kw5">1650–1750</span> 年那樣偏低？</p>
+            <div class="textarea-wrap">
+              <textarea id="q2" placeholder="請以完整語句回答（建議觸及：溫室氣體/人為排放/全球暖化等）"></textarea>
+            </div>
+            <details class="tips">
+              <summary>💡 建議與方向（可展開）</summary>
+              <ul>
+                <li>思考影響氣候的多重因子：<span class="kw2">太陽活動</span>只是其中之一。</li>
+                <li>比較過去與現在的人為因素：<span class="kw3">溫室氣體</span>（CO₂、甲烷等）排放、都市化、土地利用改變。</li>
+                <li>提及其他強迫因子：火山氣溶膠、海洋內部變率（PDO/AMO）、時間尺度差異。</li>
+                <li>可能結論：現代的人為增溫效應「蓋過」了太陽活動偏低的降溫影響。</li>
+              </ul>
+            </details>
+            <div id="fb2" class="feedback" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 兩張圖片（跨兩欄，置於 Q2 與 Q3 之間） -->
+      <section class="card imgs media-two">
+        <div class="pair">
+          <img src="4_1.png" alt="兩千年來地表溫度變化圖" loading="lazy">
+          <img src="4_2.png" alt="400年太陽黑子觀察與近百年無黑子照片對比" loading="lazy">
+        </div>
+      </section>
+
+      <!-- 第四段（左） -->
+      <section class="card text p4" id="sec4-text">
+        <div class="section-title">達文西的早期洞見</div>
+        <p>
+          其實，道格拉斯並非第一位研究樹輪的科學家。在 <span class="kw5">西元1500年</span>，
+          <span class="kw6">李奧納多·達文西</span>（Leonardo da Vinci）就指出樹輪數目可代表樹齡，
+          且樹輪<span class="kw1">寬窄</span>與其形成時期的<span class="kw3">氣候</span>有密切關係，因此他以樹輪寬度推論當地歷年<span class="kw3">降雨</span>情形。
+        </p>
+      </section>
+
+      <!-- 問題三（右） -->
+      <section class="card question q3" id="sec4-ask">
+        <div class="ask">
+          <div class="ask-inner">
+            <h4>討論問題 3</h4>
+            <p class="prompt">木材與<span class="kw1">樹輪</span>隨處可見，從達文西的發現到道格拉斯的研究相隔約 500 年。為何這 500 年間似乎出現研究斷層？你認為可能的原因是什麼？</p>
+            <div class="textarea-wrap">
+              <textarea id="q3" placeholder="請以完整語句回答（建議觸及：科學方法/儀器/學術交流/研究資源與需求等）"></textarea>
+            </div>
+            <details class="tips">
+              <summary>💡 建議與方向（可展開）</summary>
+              <ul>
+                <li>工具與方法：早期<span class="kw3">儀器</span>與統計方法不足，難以系統化蒐集/比對樣本。</li>
+                <li>跨域需求：近代以前對<span class="kw1">樹輪定年</span>在考古、氣候重建的需求較低。</li>
+                <li>學術傳播：資料庫與國際交流不足，標準流程未建立。</li>
+                <li>社會情境：資源分配、戰爭/政治/宗教、研究優先序等影響。</li>
+              </ul>
+            </details>
+            <div id="fb3" class="feedback" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 第五段：橫向撐滿（全寬） -->
+      <section class="card p5" id="sec5-text">
+        <div class="section-title">樹輪年代學的更多應用</div>
+        <p>
+          <span class="kw5">1914年</span>，來自<span class="kw6">美國自然史博物館</span>的<span class="kw6">克拉克·韋士勒</span>找上<span class="kw6">道格拉斯</span>，
+          希望用<span class="kw1">年輪定年</span>估計美國西南方原住民遺址年代，計畫成功並延續 15 年。
+          除了研究<span class="kw3">氣候變化</span>與考古遺跡年代，<span class="kw1">樹輪年代學</span>也可推估<span class="kw6">冰河</span>移動與<span class="kw6">火山噴發</span>時間。
+        </p>
+      </section>
+
+    </div><!-- /.lr-grid -->
+
+    <!-- 送出區 -->
+    <div class="card" id="submit-card" style="margin-top:18px;">
+      <div class="center" style="flex-direction:column;">
+        <button id="submitBtn" class="btn primary" style="min-width:200px">提交答案</button>
+        <div id="submitFB" class="feedback" style="width:100%;"></div>
+        <div class="muted" style="margin-top:6px">
+          目前指定的雲端表：<a href="https://docs.google.com/spreadsheets/d/11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA/edit?gid=0#gid=0" target="_blank">Google 試算表</a>（需設定 Apps Script 端點）
+        </div>
+      </div>
+    </div>
+  </div><!-- /.container -->
+
+  <!-- 頁尾導覽 -->
+  <div class="footer">
+    <div class="footer-inner">
+      <div class="nav">
+        <a href="./3.html" class="prev">← 上一頁</a>
+      </div>
+      <div class="nav">
+        <a id="next-link" class="next disabled" href="./5.html" aria-disabled="true">下一頁 →</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* Apps Script 端點（可選） */
+const SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwnLvodlNtZ0Mqk_uEpJsR6YdbhmcTm4RAoRZ25wPlKFK_67FxJ3ujaCiTO4tYUoTZNEQ/exec";
+
+/* 常數與工具 */
+const LS_KEY = "ringstory_form_v3_lrgrid_v5";
+function $(id){ return document.getElementById(id); }
+function setFB(el, ok, msg){
+  el.className = "feedback " + (ok ? "correct" : "incorrect");
+  el.textContent = msg;
+}
+function answersFilled(){
+  return $('q1').value.trim() && $('q2').value.trim() && $('q3').value.trim();
+}
+function updateNextLock(){
+  const nextLink = $('next-link');
+  if(answersFilled()){
+    nextLink.classList.remove('disabled');
+    nextLink.removeAttribute('aria-disabled');
+  }else{
+    if(!nextLink.classList.contains('disabled')){
+      nextLink.classList.add('disabled');
+      nextLink.setAttribute('aria-disabled','true');
+    }
+  }
+}
+function persist(){
+  const data = {
+    cls:$('cls').value.trim(),
+    no:$('no').value.trim(),
+    name:$('name').value.trim(),
+    q1:$('q1').value.trim(),
+    q2:$('q2').value.trim(),
+    q3:$('q3').value.trim(),
+  };
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
+  updateNextLock();
+}
+
+/* 載入本機暫存 */
+(function restore(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(LS_KEY)||"{}");
+    if(saved.cls) $('cls').value = saved.cls;
+    if(saved.no) $('no').value = saved.no;
+    if(saved.name) $('name').value = saved.name;
+    if(saved.q1) $('q1').value = saved.q1;
+    if(saved.q2) $('q2').value = saved.q2;
+    if(saved.q3) $('q3').value = saved.q3;
+  }catch(e){}
+  updateNextLock();
+})();
+
+/* 綁定輸入事件（即時解鎖判斷 + 暫存） */
+["cls","no","name","q1","q2","q3"].forEach(id=>{
+  $(id).addEventListener("input", persist);
+});
+
+/* 提交邏輯 */
+$('submitBtn').addEventListener('click', async ()=>{
+  const cls = $('cls').value.trim();
+  const no = $('no').value.trim();
+  const name = $('name').value.trim();
+  const a1 = $('q1').value.trim();
+  const a2 = $('q2').value.trim();
+  const a3 = $('q3').value.trim();
+
+  if(!cls || !no || !name){
+    setFB($('submitFB'), false, "請先完整填寫：班級、座號、姓名。");
+    return;
+  }
+  if(!answersFilled()){
+    setFB($('submitFB'), false, "請先回答完三個討論問題。");
+    return;
+  }
+
+  $('fb1').className = "feedback correct"; $('fb1').textContent = "✅ 已回答。";
+  $('fb2').className = "feedback correct"; $('fb2').textContent = "✅ 已回答。";
+  $('fb3').className = "feedback correct"; $('fb3').textContent = "✅ 已回答。";
+
+  const payload = {
+    timestamp: new Date().toISOString(),
+    class: cls, seat: no, name,
+    q1: a1, q2: a2, q3: a3,
+    target_sheet_hint: "https://docs.google.com/spreadsheets/d/11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA/edit?gid=0#gid=0"
+  };
+
+  if(SCRIPT_WEB_APP_URL){
+    try{
+      const resp = await fetch(SCRIPT_WEB_APP_URL, {
+        method:"POST",
+        headers:{ "Content-Type":"text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+      if(resp.ok){
+        setFB($('submitFB'), true, "✅ 已提交成功！右下「下一頁 →」已可點擊。");
+        $('submitBtn').disabled = true;
+      }else{
+        await fallbackCSV(payload);
+        setFB($('submitFB'), false, "⚠️ 雲端回應非 200，已下載 CSV 備份供手動上傳；同時已解鎖下一頁。");
+        $('submitBtn').disabled = true;
+      }
+    }catch(e){
+      await fallbackCSV(payload);
+      setFB($('submitFB'), false, "⚠️ 無法連線到雲端端點，已下載 CSV 備份供手動上傳；同時已解鎖下一頁。");
+      $('submitBtn').disabled = true;
+    }
+  } else {
+    await fallbackCSV(payload);
+    setFB($('submitFB'), true, "✅ 已通過（本活動只要答完即通過）。尚未設定雲端端點，已下載 CSV 備份；可手動匯入試算表。");
+    $('submitBtn').disabled = true;
+  }
+
+  updateNextLock();
+});
+
+// CSV 備援下載
+async function fallbackCSV(obj){
+  const headers = ["timestamp","class","seat","name","q1","q2","q3"];
+  const escapeCSV = s => `"${String(s).replaceAll('"','""')}"`;
+  const row = headers.map(h=>escapeCSV(obj[h] ?? "")).join(",");
+  const csv = headers.join(",") + "\n" + row + "\n";
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = "plant-transport_作答.csv";
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+/* 防止提交前關閉 */
+window.addEventListener("beforeunload", function (e) {
+  const a1 = $('q1').value.trim(), a2 = $('q2').value.trim(), a3 = $('q3').value.trim();
+  const btnDisabled = $('submitBtn').disabled;
+  if((a1 || a2 || a3) && !btnDisabled){
+    e.preventDefault(); e.returnValue = "";
+  }
+});
+</script>
+</body>
+</html>

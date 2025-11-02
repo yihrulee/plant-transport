@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>植物的運輸挑戰賽｜單一互動式網頁</title>
+  <style>
+    :root{
+      --bg:#0d1b2a; --water:#102a43; --ui:#e0fbfc; --good:#16a34a; --bad:#dc2626;
+      --chip:#1b263b; --chipText:#d9e2ec; --disabled:#94a3b8;
+      --kw-wood:#22c55e; --kw-phloem:#f97316; --kw-root:#06b6d4; --kw-trans:#14b8a6;
+      --kw-stoma:#2563eb; --kw-guard:#8b5cf6; --kw-osmo:#0ea5e9;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;color:#0b1220;font-family:system-ui,-apple-system,"Noto Sans TC",Segoe UI,Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;}
+    header{padding:12px 16px;border-bottom:1px solid #1f334a;background:#0f2138;position:sticky;top:0;z-index:10;color:#f0f6ff}
+    header .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .pill{background:var(--chip);color:var(--chipText);padding:8px 12px;border-radius:999px;font-size:14px}
+    .pill.title{font-size:20px;font-weight:700;letter-spacing:.5px}
+    .wrap{max-width:1000px;margin:0 auto;padding:12px}
+    #stageWrap{position:relative;max-width:1000px;margin:10px auto;border:1px solid #1f334a;border-radius:12px;overflow:hidden;background:#0b1a2b}
+    canvas{display:block;width:100%;height:auto;outline:none; touch-action:none;}
+    /* overlay */
+    .overlay{
+      position:absolute;inset:0;background:rgba(6,12,20,.9);
+      display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#e8f0ff
+    }
+    .card{max-width:820px;background:#0f2138;border:1px solid #1f334a;border-radius:16px;padding:22px 22px 24px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+    .card h1{margin:.2em 0 .4em 0;font-size:34px}
+    .card p{margin:.4em 0;line-height:1.6;font-size:16px}
+    .rules{display:grid;gap:8px;text-align:left;background:#0b1a2b;border:1px dashed #274764;padding:12px;border-radius:12px;margin:10px 0}
+    button.primary{
+      background:#3b82f6;border:none;color:white;padding:10px 18px;border-radius:999px;font-size:16px;cursor:pointer
+    }
+    button.primary:hover{filter:brightness(1.05)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b1a2b;border:1px solid #274764;border-radius:8px;padding:2px 8px;color:#e2eeff}
+    /* HUD text over canvas */
+    .hud{position:absolute;left:12px;top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .hud .pill{background:rgba(15,33,56,.75);color:#dbeafe;border:1px solid #1f334a}
+    #hudTime{display:none;} /* 不顯示剩餘時間 */
+    /* question bar moved down, larger, colorized keywords */
+    .questionBar{
+      position:absolute;left:0;top:64px;width:100%;
+      text-align:center;padding:12px 16px;
+      color:#04243b;font-weight:800;
+      background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0));
+      font-size:32px; /* 題目 32px */
+      line-height:1.25;
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
+    }
+    .questionBar .kw-wood{color:var(--kw-wood)}
+    .questionBar .kw-phloem{color:var(--kw-phloem)}
+    .questionBar .kw-root{color:var(--kw-root)}
+    .questionBar .kw-trans{color:var(--kw-trans)}
+    .questionBar .kw-stoma{color:var(--kw-stoma)}
+    .questionBar .kw-guard{color:var(--kw-guard)}
+    .questionBar .kw-osmo{color:var(--kw-osmo)}
+    .questionBar .kw-water{color:#0ea5e9}     /* 水分 */
+    .questionBar .kw-food{color:#f59e0b}      /* 養分 */
+    .questionBar .kw-bundle{color:#22d3ee}    /* 維管束 */
+    .questionBar .kw-rootp{color:#06b6d4}     /* 根部 */
+    .questionBar .kw-leaf{color:#10b981}      /* 葉/葉尖 */
+    .questionBar .kw-stem{color:#a78bfa}      /* 莖 */
+    .questionBar .kw-flower{color:#ef4444}    /* 花 */
+    .questionBar .kw-vessel{color:#fb7185}    /* 導管 */
+    .questionBar .kw-sugar{color:#eab308}     /* 糖分 */
+    .questionBar .kw-girdle{color:#fb923c}    /* 環狀剝皮/環割 */
+    .questionBar .kw-rootpress{color:#f472b6} /* 根壓 */
+    .questionBar .kw-guttation{color:#ef476f} /* 吐水 */
+
+    /* on-screen controls */
+    .controls{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:10px}
+    .controls button{width:60px;height:60px;border-radius:14px;border:1px solid #1f334a;background:#112b45;color:#e2e8f0;font-size:24px}
+    .controls button:active{transform:translateY(1px)}
+    /* footer nav */
+    footer{border-top:1px solid #1f334a;margin-top:10px;background:#0f2138}
+    .nav{max-width:1000px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+    .nav a{color:#e2e8f0;text-decoration:none;padding:8px 12px;border:1px solid #274764;border-radius:10px}
+    .nav a.disabled{opacity:.45;pointer-events:none;border-color:#334a63;color:var(--disabled)}
+    .scoreBig{font-size:30px;color:#fff;margin:.2em 0 .6em}
+    .muted{color:#9fb3c8;font-size:14px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="row">
+      <div class="pill title">植物的運輸挑戰賽</div>
+      <div class="pill">基礎分：55</div>
+      <div class="pill">吃對 +3｜吃錯 −3｜沒吃到不計分</div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div id="stageWrap">
+      <div class="questionBar" id="questionBar">按「開始遊戲」顯示題目</div>
+      <canvas id="game" width="1000" height="520" tabindex="0" aria-label="遊戲舞台"></canvas>
+
+      <!-- HUD -->
+      <div class="hud">
+        <span class="pill" id="hudScore">分數：55</span>
+        <span class="pill" id="hudTime">剩餘：2:00</span>
+        <span class="pill" id="hudQ">第 1 / 15 題</span>
+      </div>
+
+      <!-- Start / End Overlay -->
+      <div class="overlay" id="overlay">
+        <div class="card" role="dialog" aria-modal="true">
+          <h1>植物的運輸挑戰賽</h1>
+          <p>操作：<span class="kbd">↑</span>/<span class="kbd">↓</span>、<span class="kbd">W</span>/<span class="kbd">S</span>，或直接在畫面拖曳到目標高度；手機也可點擊右下按鈕。</p>
+          
+          <div class="rules">
+            <p>• 目標：控制小魚吃到正確答案。</p>
+            <p>• 時間：2 分鐘　起始分 55 分。</p>
+            <p>• 操作：按 ↑ / ↓、W / S 上下移動；也可拖曳畫面或使用右下按鈕。</p>
+            <p>• 題目：顯示在上方；三個選項會從右往左飄過。</p>
+            <p>• 判分：吃對 +3 顯示愛心；吃錯 −3 顯示鞭炮；沒吃到不計分。</p>
+            <p>• 結束：顯示分數後，頁尾「下一頁 →」解鎖。</p>
+          </div>
+
+          <button class="primary" id="btnStart">開始遊戲</button>
+          <p class="muted">提示：開始後畫布自動取得焦點；若無反應，請點一下畫布再操作。</p>
+        </div>
+      </div>
+
+      <!-- On-screen controls for mobile -->
+      <div class="controls" aria-hidden="false">
+        <button id="btnUp" aria-label="上移">↑</button>
+        <button id="btnDown" aria-label="下移">↓</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="nav">
+      <a href="6.html" id="prevLink">← 上一頁</a>
+      <a href="javascript:void(0)" id="nextLink" class="disabled" aria-disabled="true" title="完成遊戲後解鎖">下一頁 →</a>
+    </div>
+  </footer>
+
+  <script>
+    // ====== 題庫（15 題；已簡化 11/13/15） ======
+    const QUESTIONS = [
+      { q:"植物將水分自根部運輸到莖、葉和花，主要藉由哪一個構造？",
+        options:["木質部","韌皮部","海綿組織"], answer:0 },
+      { q:"植物體內運輸光合作用所產生的養分主要由哪一個構造？",
+        options:["韌皮部","木質部","導管"], answer:0 },
+      { q:"養分在維管束中的運輸方向通常是？",
+        options:["可向上或向下，從供應部位到需求部位","只能向上，由根到葉","只能向下，由葉到根"], answer:0 },
+      { q:"根毛的主要功能是？",
+        options:["增加吸收水分的表面積","進行光合作用","幫助植物開花"], answer:0 },
+      { q:"水分在木質部向上運輸的主要動力是？",
+        options:["蒸散作用產生的拉力","根的主動運輸","重力"], answer:0 },
+      { q:"何謂蒸散作用？",
+        options:["水分變成水蒸氣由氣孔散失","水變成養分儲存於根","根釋放二氧化碳的過程"], answer:0 },
+      { q:"下列何種情況最可能使蒸散作用旺盛？",
+        options:["風強且空氣乾燥","空氣溼度高且無風","低溫陰暗"], answer:0 },
+      { q:"控制氣孔開閉的細胞是？",
+        options:["保衛細胞","木質部細胞","薄壁細胞"], answer:0 },
+      { q:"一般陸生植物的氣孔大多分布在？",
+        options:["葉的下表皮","葉的上表皮","木質部"], answer:0 },
+      { q:"水分進入根部的主要方式是？",
+        options:["滲透作用","擴散進入葉綠體","主動運輸到韌皮部"], answer:0 },
+      { q:"環狀剝皮（環割）後，糖分會累積在傷口的哪一側？",
+        options:["上方","下方","沒有固定"], answer:0 },
+      { q:"下列何者最能降低蒸散速率？",
+        options:["空氣濕度高","強風","高溫晴朗"], answer:0 },
+      { q:"氣孔打開時，保衛細胞會變成什麼樣子？",
+        options:["變鼓（膨脹）","變扁（縮小）","沒變化"], answer:0 },
+      { q:"木質部導管的細胞成熟時多為？",
+        options:["厚壁、無細胞內容物","具葉綠體的活細胞","表皮細胞"], answer:0 },
+      { q:"清晨葉尖上的小水滴主要是因為？",
+        options:["根壓把水擠出（吐水）","蒸散很強","昨晚的雨水"], answer:0 },
+    ];
+
+    // ====== 公用 ======
+    const rand = (a,b)=> a + Math.random()*(b-a);
+
+    // ====== 遊戲狀態 ======
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const questionBar = document.getElementById('questionBar');
+    const hudScore = document.getElementById('hudScore');
+    const hudTime  = document.getElementById('hudTime');
+    const hudQ     = document.getElementById('hudQ');
+    const overlay  = document.getElementById('overlay');
+    const btnStart = document.getElementById('btnStart');
+    const btnUp    = document.getElementById('btnUp');
+    const btnDown  = document.getElementById('btnDown');
+    const nextLink = document.getElementById('nextLink');
+
+    let DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    function fitCanvas(){
+      const rect = canvas.getBoundingClientRect();
+      canvas.width  = Math.floor(rect.width * DPR);
+      canvas.height = Math.floor((rect.width * 0.52) * DPR);
+    }
+    fitCanvas(); window.addEventListener('resize', fitCanvas);
+
+    const GAME = {
+      state: 'start',
+      score: 55,
+      timeLeft: 120, // seconds
+      qIndex: 0,
+      questionAnswered: false,
+      options: [],
+      optionSpeed: 2.0 * DPR, // 較慢
+      eatenIds: new Set(),
+      timerId: null,
+    };
+
+    // ====== 小魚（大且張嘴） ======
+    const fish = {
+      x: 120 * DPR, y: canvas.height/2, r: 28 * DPR, vy: 0,
+      draw(){
+        const {x,y,r} = this;
+        ctx.save();
+        ctx.translate(x,y);
+        // 身體
+        ctx.fillStyle = '#4fd1c5';
+        ctx.beginPath();
+        ctx.ellipse(0,0, r*1.25, r*0.9, 0, 0, Math.PI*2);
+        ctx.fill();
+        // 開口
+        ctx.fillStyle = '#0b1322';
+        ctx.beginPath();
+        ctx.moveTo(r*1.25 - 2*DPR, -r*0.22);
+        ctx.lineTo(r*1.25 + 8*DPR, 0);
+        ctx.lineTo(r*1.25 - 2*DPR,  r*0.22);
+        ctx.closePath(); ctx.fill();
+        // 尾巴
+        ctx.fillStyle = '#38b2ac';
+        const t = Date.now()/300;
+        const wag = Math.sin(t)*r*0.18;
+        ctx.beginPath();
+        ctx.moveTo(-r*1.25, 0);
+        ctx.lineTo(-r*1.9, -r*0.65 + wag);
+        ctx.lineTo(-r*1.9,  r*0.65 - wag);
+        ctx.closePath(); ctx.fill();
+        // 眼睛
+        ctx.fillStyle = '#0b1322';
+        ctx.beginPath(); ctx.arc(r*0.6, -r*0.18, r*0.13, 0, Math.PI*2); ctx.fill();
+        ctx.restore();
+      },
+      update(){
+        this.y += this.vy;
+        const margin = 10 * DPR;
+        if(this.y < margin) this.y = margin;
+        if(this.y > canvas.height - margin) this.y = canvas.height - margin;
+      },
+      hitRect(rect){
+        const distX = Math.abs((this.x) - (rect.x + rect.w/2));
+        const distY = Math.abs((this.y) - (rect.y + rect.h/2));
+        if (distX > (rect.w/2 + this.r) || distY > (rect.h/2 + this.r)) return false;
+        if (distX <= (rect.w/2) || distY <= (rect.h/2)) return true;
+        const dx=distX-rect.w/2, dy=distY-rect.h/2;
+        return (dx*dx + dy*dy) <= (this.r*this.r);
+      }
+    };
+
+    // ====== 答案選項（淺黃底、黑字） ======
+    let nextOptId = 1;
+    function makeOption(text, isCorrect, laneY, offsetPx){
+      const fontSize = 18*DPR;
+      ctx.font = `${fontSize}px system-ui, "Noto Sans TC"`;
+      const padding = 12*DPR;
+      const textW = ctx.measureText(text).width;
+      const w = textW + padding*2;
+      const h = 36*DPR;
+      return {
+        id: nextOptId++,
+        text, isCorrect,
+        x: canvas.width + offsetPx,
+        y: laneY - h/2,
+        w, h,
+        alive: true,
+        draw(){
+          ctx.fillStyle = 'rgba(255, 244, 189, 0.95)'; /* 淺黃 */
+          ctx.fillRect(this.x, this.y, this.w, this.h);
+          ctx.strokeStyle = 'rgba(214, 182, 44, 0.6)';
+          ctx.strokeRect(this.x, this.y, this.w, this.h);
+          ctx.fillStyle = '#111'; /* 黑字 */
+          ctx.font = `${fontSize}px system-ui, "Noto Sans TC"`;
+          ctx.textBaseline = 'middle';
+          ctx.fillText(this.text, this.x + padding, this.y + this.h/2);
+        },
+        update(){
+          this.x -= GAME.optionSpeed;
+          if(this.x + this.w < -10*DPR) this.alive = false;
+        }
+      };
+    }
+
+    // ====== 題目流程 ======
+    function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+    function colorizeQuestion(txt){
+      const map = [
+        [/木質部/g, '<span class="kw-wood">木質部</span>'],
+        [/韌皮部/g, '<span class="kw-phloem">韌皮部</span>'],
+        [/根毛/g, '<span class="kw-root">根毛</span>'],
+        [/蒸散作用/g, '<span class="kw-trans">蒸散作用</span>'],
+        [/氣孔/g, '<span class="kw-stoma">氣孔</span>'],
+        [/保衛細胞/g, '<span class="kw-guard">保衛細胞</span>'],
+        [/滲透作用/g, '<span class="kw-osmo">滲透作用</span>'],
+        [/水分/g, '<span class="kw-water">水分</span>'],
+        [/養分/g, '<span class="kw-food">養分</span>'],
+        [/維管束/g, '<span class="kw-bundle">維管束</span>'],
+        [/根部/g, '<span class="kw-rootp">根部</span>'],
+        [/葉尖/g, '<span class="kw-leaf">葉尖</span>'],
+        [/葉/g, '<span class="kw-leaf">葉</span>'],
+        [/莖/g, '<span class="kw-stem">莖</span>'],
+        [/花/g, '<span class="kw-flower">花</span>'],
+        [/導管/g, '<span class="kw-vessel">導管</span>'],
+        [/糖分/g, '<span class="kw-sugar">糖分</span>'],
+        [/環狀剝皮|環割/g, '<span class="kw-girdle">環狀剝皮</span>'],
+        [/根壓/g, '<span class="kw-rootpress">根壓</span>'],
+        [/吐水/g, '<span class="kw-guttation">吐水</span>'],
+      ];
+      let html = txt;
+      for (const [re, rep] of map) html = html.replace(re, rep);
+      return html;
+    }
+    function loadQuestion(){
+      GAME.questionAnswered = false;
+      GAME.eatenIds.clear();
+      const q = QUESTIONS[GAME.qIndex];
+      questionBar.innerHTML = colorizeQuestion(q.q);
+      hudQ.textContent = `第 ${GAME.qIndex+1} / ${QUESTIONS.length} 題`;
+      const order = shuffle([0,1,2]);
+      const lanes = [];
+      const top = 160 * DPR, bottom = canvas.height - 90 * DPR; // 題幹下移
+      const laneCount = 3;
+      for(let i=0;i<laneCount;i++){
+        lanes.push(top + i*(bottom-top)/(laneCount-1));
+      }
+      shuffle(lanes);
+      GAME.options = [];
+      const baseGap = 150 * DPR;
+      for(let i=0;i<order.length;i++){
+        const optIdx = order[i];
+        const text = q.options[optIdx];
+        const isCorrect = (optIdx === q.answer);
+        GAME.options.push(makeOption(text, isCorrect, lanes[i], i*baseGap));
+      }
+    }
+    function nextQuestionOrEnd(){
+      if (GAME.qIndex < QUESTIONS.length - 1) {
+        GAME.qIndex++;
+        loadQuestion();
+      } else {
+        endGame();
+      }
+    }
+
+    // ====== 計時（不顯示倒數） ======
+    function startTimer(){
+      GAME.timerId = setInterval(()=>{
+        if (GAME.timeLeft > 0) {
+          GAME.timeLeft--;
+          if (GAME.timeLeft <= 0) endGame();
+        }
+      }, 1000);
+    }
+    function stopTimer(){ if(GAME.timerId){ clearInterval(GAME.timerId); GAME.timerId=null; } }
+
+    // ====== 視覺特效（與 v10 相同） ======
+    const hearts = [];
+    const crackers = []; // 爆閃 + 衝擊波
+    const papers = [];   // 鞭炮碎紙片
+
+    function emitHearts(x,y){
+      for(let i=0;i<12;i++){ // more hearts
+        hearts.push({
+          x: x + rand(-6,10)*DPR,
+          y: y + rand(-8,8)*DPR,
+          vx: rand(-0.35,0.35)*DPR,
+          vy: rand(-1.0,-0.5)*DPR,
+          life: 52,
+          size: rand(1.2,1.8)*DPR, // bigger
+          color: '#ff4d6d'
+        });
+      }
+    }
+
+    function emitCracker(x,y){
+      crackers.push({ x, y, r: 0, maxR: 90*DPR, life: 26 });
+      for(let i=0;i<14;i++){
+        papers.push({
+          x, y,
+          vx: rand(-0.9,0.9)*DPR,
+          vy: rand(-0.2, -1.0)*DPR,
+          g: 0.06*DPR,
+          rot: rand(0, Math.PI),
+          vr: rand(-0.2, 0.2),
+          w: rand(3,6)*DPR,
+          h: rand(8,14)*DPR,
+          life: 60,
+          color: i%2 ? '#ff3b30' : '#ffb703'
+        });
+      }
+    }
+
+    function drawHeart(p){
+      const age = 1 - (p.life/52); // 0 -> 1
+      const pulse = 1 + 0.15*Math.sin(age*10); // subtle pulse
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.life/52);
+      ctx.translate(p.x, p.y);
+      ctx.scale(p.size*pulse, p.size*pulse);
+      // fill
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.moveTo(0,-10);
+      ctx.bezierCurveTo(12,-28, 38,-10, 0, 20);
+      ctx.bezierCurveTo(-38,-10, -12,-28, 0,-10);
+      ctx.fill();
+      // white outline for visibility
+      ctx.lineWidth = 1.4*DPR;
+      ctx.strokeStyle = 'rgba(255,255,255,0.9)';
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function updateEffects(){
+      for(const h of hearts){ h.x += h.vx; h.y += h.vy; h.life -= 1; }
+      for(const c of crackers){ c.r += (c.maxR - c.r)*0.25; c.life -= 1; }
+      for(const p of papers){ p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 1; }
+    }
+
+    function drawEffects(){
+      // Draw crackers & papers first (background), hearts last (on top)
+      for(const c of crackers){
+        const alpha = Math.max(0, c.life/26);
+        const grd = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r*0.6);
+        grd.addColorStop(0, `rgba(255,230,120,${0.8*alpha})`);
+        grd.addColorStop(0.6, `rgba(255,120,60,${0.35*alpha})`);
+        grd.addColorStop(1, `rgba(255,120,60,0)`);
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.r*0.6, 0, Math.PI*2);
+        ctx.fill();
+        ctx.save();
+        ctx.globalAlpha = 0.85*alpha;
+        ctx.strokeStyle = '#ff3b30';
+        ctx.lineWidth = Math.max(2*DPR, c.r*0.06);
+        ctx.beginPath(); ctx.arc(c.x, c.y, c.r, 0, Math.PI*2); ctx.stroke();
+        ctx.restore();
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.globalAlpha = 0.6*alpha;
+        ctx.fillStyle = '#ffb703';
+        const spikes = 8, R = c.r*0.5, r = R*0.35;
+        ctx.beginPath();
+        for(let i=0;i<spikes*2;i++){
+          const ang = (i*Math.PI)/spikes;
+          const rad = (i%2===0)? R:r;
+          ctx.lineTo(Math.cos(ang)*rad, Math.sin(ang)*rad);
+        }
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
+      for(const p of papers){
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      }
+      for(const h of hearts){ drawHeart(h); }
+      while(hearts.length && hearts[0].life<=0) hearts.shift();
+      while(crackers.length && crackers[0].life<=0) crackers.shift();
+      while(papers.length && papers[0].life<=0) papers.shift();
+    }
+
+    // ====== 主循環 ======
+    let rafId=null;
+    function loop(){
+      rafId = requestAnimationFrame(loop);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      drawWater();
+      fish.update(); fish.draw();
+
+      if (GAME.state === 'playing') {
+        for (const opt of GAME.options) {
+          opt.update(); opt.draw();
+          if (opt.alive && !GAME.eatenIds.has(opt.id) && fish.hitRect(opt)) {
+            GAME.eatenIds.add(opt.id);
+            const mouthX = fish.x + fish.r*1.25, mouthY = fish.y;
+            if (opt.isCorrect && !GAME.questionAnswered) {
+              GAME.score += 3; GAME.questionAnswered = true; flash('+3', 'good');
+              emitHearts(mouthX, mouthY);
+              hudScore.textContent = `分數：${GAME.score}`;
+              setTimeout(nextQuestionOrEnd, 350);
+            } else if (!opt.isCorrect) {
+              GAME.score -= 3; flash('−3', 'bad');
+              emitCracker(mouthX, mouthY);
+              hudScore.textContent = `分數：${GAME.score}`;
+            }
+          }
+        }
+        GAME.options = GAME.options.filter(o=>o.alive);
+        if (GAME.options.length === 0 && !GAME.questionAnswered) nextQuestionOrEnd();
+      }
+      updateEffects(); drawEffects();
+    }
+
+    // ====== 背景（上層天空藍 → 下層深海藍） ======
+    function drawWater(){
+      const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      g.addColorStop(0,   '#eaf7ff');  // very light sky blue top
+      g.addColorStop(0.35,'#8fc7ef');  // mid light blue
+      g.addColorStop(0.7, '#1b4b72');  // deeper
+      g.addColorStop(1,   '#04101a');  // darkest bottom
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      const stripes = 6, t = Date.now()/900;
+      for (let i=0;i<stripes;i++){
+        ctx.fillStyle = `rgba(255,255,255,${0.018 + 0.012*Math.sin(t+i)})`;
+        const y = (i+1) * canvas.height/(stripes+1) + Math.sin(t+i)*6*DPR;
+        ctx.fillRect(0, y, canvas.width, 1*DPR);
+      }
+    }
+
+    // ====== 漂浮 +/− 提示 ======
+    let flashes = [];
+    function flash(text, type){
+      flashes.push({text, type, x: fish.x+10*DPR, y: fish.y-12*DPR, life: 30});
+    }
+    (function drawFlash(){
+      requestAnimationFrame(drawFlash);
+      flashes.forEach(f=>{
+        f.life--;
+        const alpha = Math.max(0, f.life/30);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = (f.type==='good') ? '#16a34a' : '#dc2626';
+        ctx.font = `${22*DPR}px system-ui,"Noto Sans TC"`;
+        ctx.fillText(f.text, f.x, f.y);
+        ctx.restore();
+      });
+      flashes = flashes.filter(f=>f.life>0);
+    })();
+
+    // ====== 控制（鍵盤 / 觸控鈕 / 指標拖曳） ======
+    function setVy(v){ fish.vy = v * DPR; }
+    window.addEventListener('keydown', e=>{
+      if (['ArrowUp','ArrowDown','w','W','s','S',' '].includes(e.key)) e.preventDefault();
+      if(e.key==='ArrowUp'||e.key==='w'||e.key==='W') setVy(-5);
+      if(e.key==='ArrowDown'||e.key==='s'||e.key==='S') setVy(5);
+    });
+    window.addEventListener('keyup', e=>{
+      if (['ArrowUp','ArrowDown','w','W','s','S',' '].includes(e.key)) e.preventDefault();
+      if(e.key==='ArrowUp'||e.key==='ArrowDown'||e.key==='w'||e.key==='W'||e.key==='s'||e.key==='S') setVy(0);
+    });
+    const touchStart = (v)=> (e)=>{ e.preventDefault(); setVy(v); };
+    const touchEnd   = (e)=>{ e.preventDefault(); setVy(0); };
+    btnUp.addEventListener('pointerdown', ()=>setVy(-5));
+    btnDown.addEventListener('pointerdown', ()=>setVy(5));
+    ['pointerup','pointercancel','pointerleave'].forEach(evt=>{
+      btnUp.addEventListener(evt, ()=>setVy(0));
+      btnDown.addEventListener(evt, ()=>setVy(0));
+    });
+    btnUp.addEventListener('touchstart', touchStart(-5), {passive:false});
+    btnDown.addEventListener('touchstart', touchStart(5), {passive:false});
+    ['touchend','touchcancel'].forEach(evt=>{
+      btnUp.addEventListener(evt, touchEnd, {passive:false});
+    });
+
+    // 畫布拖曳移動
+    let dragging = false;
+    function cssToDeviceY(clientY){
+      const rect = canvas.getBoundingClientRect();
+      const ratio = canvas.height / rect.height;
+      return (clientY - rect.top) * ratio;
+    }
+    canvas.addEventListener('pointerdown', (e)=>{
+      dragging = true;
+      fish.y = cssToDeviceY(e.clientY);
+      setVy(0);
+      canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e)=>{
+      if(!dragging) return;
+      fish.y = cssToDeviceY(e.clientY);
+    });
+    canvas.addEventListener('pointerup', (e)=>{
+      dragging = false;
+      canvas.releasePointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointercancel', ()=>{ dragging=false; });
+
+    // ====== 開始 / 結束 ======
+    document.getElementById('btnStart').addEventListener('click', startGame);
+    function startGame(){
+      overlay.style.display = 'none';
+      GAME.state = 'playing';
+      GAME.score = 55; GAME.timeLeft = 120; GAME.qIndex = 0;
+      hudScore.textContent = `分數：${GAME.score}`;
+      hudQ.textContent = `第 1 / ${QUESTIONS.length} 題`;
+      loadQuestion();
+      startTimer();
+      if(!rafId) loop();
+      setTimeout(()=>{ canvas.focus(); }, 0);
+    }
+    function endGame(){
+      if (GAME.state === 'ended') return;
+      GAME.state = 'ended';
+      stopTimer();
+      overlay.style.display = 'flex';
+      overlay.querySelector('.card').innerHTML = `
+        <h1>時間到！</h1>
+        <div class="scoreBig">你的分數：<b>${GAME.score}</b></div>
+        <p class="muted">提示：再次挑戰可嘗試吃掉正確答案、閃避錯誤答案。</p>
+        <button class="primary" id="btnRestart">再玩一次</button>
+      `;
+      overlay.querySelector('#btnRestart').addEventListener('click', ()=>{ startGame(); });
+      const nextLink = document.getElementById('nextLink');
+      nextLink.classList.remove('disabled');
+      nextLink.setAttribute('aria-disabled','false');
+      nextLink.href = './8.html';
+      nextLink.title = '前往下一頁';
+    }
+
+    // 啟動渲染循環（待開始）
+    loop();
+  </script>
+</body>
+</html>

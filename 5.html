@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>植物的運輸_學習頁面_植物體內的養分運輸</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1f2937;
+    --muted:#6b7280; --pri:#2563eb;
+    --ok-bg:#dcfce7; --ok-bd:#16a34a;
+    --bad-bg:#fee2e2; --bad-bd:#ef4444;
+    --chip1:#1c8b6b; --chip2:#b45309; --chip3:#7c3aed; --chip4:#be123c; --chip5:#0ea5e9; --chip6:#059669;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI","Microsoft JhengHei",Arial;line-height:1.6;}
+  header{padding:26px 16px;text-align:center;background:linear-gradient(180deg,#eef2ff,#fff)}
+  h1{margin:0 0 6px;font-size:clamp(22px,3.6vw,34px)}
+  .sub{color:var(--muted);font-size:.95rem}
+  main{max-width:1100px;margin:0 auto;padding:20px 16px 120px}
+  .lesson{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center;background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.04)}
+  .lesson img{width:100%;height:auto;border-radius:10px;border:1px solid #e5e7eb}
+  .kw{padding:1px 6px;border-radius:10px;font-weight:700;color:#fff}
+  .k1{background:var(--chip1)} .k2{background:var(--chip2)} .k3{background:var(--chip3)}
+  .k4{background:var(--chip4)} .k5{background:var(--chip5)} .k6{background:var(--chip6)}
+  .quiz{margin-top:20px;display:grid;gap:16px}
+  .q-card{background:var(--card);border:2px solid #e5e7eb;border-radius:14px;padding:16px}
+  .q-card.correct{background:var(--ok-bg);border-color:var(--ok-bd)}
+  .q-card.incorrect{background:var(--bad-bg);border-color:var(--bad-bd)}
+  .q-title{margin:0 0 10px;font-weight:800}
+  fieldset{border:0;padding:0;margin:0}
+  .opt{display:flex;gap:10px;align-items:flex-start;margin:.28rem 0}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid #d1d5db;background:#fff;color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer;font-weight:600}
+  .btn[disabled]{opacity:.45;pointer-events:none}
+  .btn.primary{background:var(--pri);border-color:var(--pri);color:#fff}
+  .btn.ghost{background:#fff}
+  .pill{display:inline-block;padding:.25rem .5rem;background:#eef2ff;border-radius:999px;font-size:.8rem;margin-left:6px}
+  .fb{margin-top:10px;padding:10px 12px;background:#fff;border:1px dashed #cbd5e1;border-radius:10px;display:none}
+  .pair{display:grid;grid-template-columns:160px 1fr;gap:10px;align-items:center}
+  .ord{list-style:none;padding:0;margin:.5rem 0;display:grid;gap:8px}
+  .ord li{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc}
+  .ord .move{display:inline-flex;gap:6px;margin-left:auto}
+  .move .btn{padding:4px 8px}
+  footer{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;justify-content:center}
+  .nav{width:min(1100px,100%);display:flex;justify-content:space-between;gap:10px;padding:14px 16px}
+  .nav a{text-decoration:none}
+  .nav .link{border:2px solid var(--pri);color:var(--pri);background:#fff;padding:10px 14px;border-radius:12px;font-weight:800}
+  .nav .link.next{background:var(--pri);color:#fff}
+  .disabled{opacity:.45;pointer-events:none;filter:grayscale(.3)}
+  @media (max-width:860px){.lesson{grid-template-columns:1fr}}
+
+  /* 標題區：移除小字（副標） */
+  header .sub{ display:none !important; }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>植物的運輸｜植物體內的養分運輸</h1>
+  <div class="sub">閱讀文本 → 完成 4 題互動練習，全部答對後即可前往下一頁</div>
+</header>
+
+<main>
+  <!-- 教學文本 + 圖片 -->
+  <section class="lesson" aria-labelledby="lesson-title">
+    <div>
+      <h2 id="lesson-title">木棉為什麼能在春天開花？</h2>
+      <p>
+        木棉在歷經秋冬後，葉片已落盡，隔年初春雖然沒有葉片可行
+        <span class="kw k3">光合作用</span>製造<span class="kw k2">葡萄糖</span>，但仍能綻放橙紅色碩大的花朵，這是因為木棉葉片所製造的養分中，
+        一部分可藉由<span class="kw k1">韌皮部</span>向下運送到<span class="kw k6">根部</span>儲存；隔年春天，儲存在根部的養分被分解，
+        再經由<span class="kw k1">韌皮部</span>向上運輸到莖，提供<span class="kw k4">開花</span>及長<span class="kw k5">新葉</span>所需。
+        由此可知養分在<span class="kw k3">維管束</span>內，是由養分的<span class="kw k2">供應部位</span>（<span class="kw k2">成熟葉</span>）運送到消耗或儲存養分的
+        <span class="kw k6">需求部位</span>（<span class="kw k6">根</span>（儲存）、<span class="kw k6">花</span>、<span class="kw k6">幼葉</span>、<span class="kw k6">生長點</span>），
+        其運輸的方向可由<span class="kw k5">上到下</span>，也可由<span class="kw k4">下到上</span>。
+      </p>
+    </div>
+    <figure>
+      <img src="5_1.png" alt="植物體內的水分與養分運輸示意圖" />
+      <figcaption class="sub" style="margin-top:6px">圖：葉製造養分 → 可沿韌皮部上下運輸</figcaption>
+    </figure>
+  </section>
+
+  <!-- 互動練習 -->
+  <section class="quiz" aria-label="互動練習">
+    <!-- Q1 單選 -->
+    <article id="q1" class="q-card" data-answered="false">
+      <h3 class="q-title">Q1｜木棉在沒有葉片時仍能開花，最直接的原因是？ <span class="pill">單選</span></h3>
+      <fieldset>
+        <label class="opt"><input type="radio" name="q1" value="A"> 因為木質部能將養分往上運輸</label>
+        <label class="opt"><input type="radio" name="q1" value="B"> 前一年儲存在根部的養分，經韌皮部向上運輸供開花</label>
+        <label class="opt"><input type="radio" name="q1" value="C"> 花瓣富含葉綠體，能大量行光合作用</label>
+        <label class="opt"><input type="radio" name="q1" value="D"> 花有專門儲存澱粉的特殊器官</label>
+      </fieldset>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn primary check-btn" disabled>檢查答案</button>
+        <button class="btn ghost redo-btn" style="display:none">重做本題</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </article>
+
+    <!-- Q2 多選（已依需求改為：花苞、花朵、幼葉、成熟葉） -->
+    <article id="q2" class="q-card" data-answered="false">
+      <h3 class="q-title">Q2｜下列哪些屬於「<b>需求部位</b>」？ <span class="pill">多選</span></h3>
+      <fieldset>
+        <label class="opt"><input type="checkbox" value="花苞"> 花苞</label>
+        <label class="opt"><input type="checkbox" value="花朵"> 花朵</label>
+        <label class="opt"><input type="checkbox" value="幼葉"> 幼葉</label>
+        <label class="opt"><input type="checkbox" value="成熟葉"> 成熟葉</label>
+      </fieldset>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn primary check-btn" disabled>檢查答案</button>
+        <button class="btn ghost redo-btn" style="display:none">重做本題</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </article>
+
+    <!-- Q3 步驟排序（載入隨機打散） -->
+    <article id="q3" class="q-card" data-answered="false">
+      <h3 class="q-title">Q3｜把木棉「養分流動」的流程排成正確順序 <span class="pill">排序</span></h3>
+      <p class="sub" style="margin:4px 0 8px">提示：秋冬成熟葉製造 → <b>向下</b>到根儲存；隔年春天根部分解 → <b>向上</b>到莖供開花長葉。</p>
+      <ol id="ord" class="ord" aria-label="按鈕調整順序">
+        <li data-key="A"><span>成熟葉片行光合作用製造葡萄糖（秋冬）</span>
+          <span class="move"><button class="btn" data-move="up" aria-label="上移">↑</button><button class="btn" data-move="down" aria-label="下移">↓</button></span>
+        </li>
+        <li data-key="B"><span>養分沿韌皮部向下運送到根部儲存</span>
+          <span class="move"><button class="btn" data-move="up">↑</button><button class="btn" data-move="down">↓</button></span>
+        </li>
+        <li data-key="C"><span>隔年春天根部儲存的養分被分解</span>
+          <span class="move"><button class="btn" data-move="up">↑</button><button class="btn" data-move="down">↓</button></span>
+        </li>
+        <li data-key="D"><span>養分經韌皮部向上運輸到莖，供開花與長新葉</span>
+          <span class="move"><button class="btn" data-move="up">↑</button><button class="btn" data-move="down">↓</button></span>
+        </li>
+      </ol>
+      <div style="display:flex;gap:8px">
+        <button class="btn primary check-btn">檢查答案</button>
+        <button class="btn ghost redo-btn" style="display:none">重做本題</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </article>
+
+    <!-- Q4 季節 × 方向 配對 -->
+    <article id="q4" class="q-card" data-answered="false">
+      <h3 class="q-title">Q4｜為不同季節選出「主要運輸方向」 <span class="pill">配對</span></h3>
+      <div class="pair">
+        <div><b>秋冬（成熟葉製造期）</b></div>
+        <div>
+          <select id="sel-autumn">
+            <option value="">— 請選擇 —</option>
+            <option value="down">上到下</option>
+            <option value="up">下到上</option>
+          </select>
+        </div>
+        <div><b>春天（萌發/開花期）</b></div>
+        <div>
+          <select id="sel-spring">
+            <option value="">— 請選擇 —</option>
+            <option value="down">上到下</option>
+            <option value="up">下到上</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn primary check-btn" disabled>檢查答案</button>
+        <button class="btn ghost redo-btn" style="display:none">重做本題</button>
+      </div>
+      <div class="fb" aria-live="polite"></div>
+    </article>
+  </section>
+</main>
+
+<footer>
+  <nav class="nav" aria-label="頁尾導覽">
+    <a class="link prev" href="4.html">← 上一頁</a>
+    <a id="nextLink" class="link next disabled" href="./6.html" aria-disabled="true">下一頁 →</a>
+  </nav>
+</footer>
+
+<script>
+  const done = { q1:false, q2:false, q3:false, q4:false };
+
+  function markCard(card, ok, msg){
+    const fb = card.querySelector('.fb');
+    card.classList.remove('correct','incorrect');
+    card.classList.add(ok ? 'correct':'incorrect');
+    fb.style.display='block'; fb.textContent = msg;
+    const check = card.querySelector('.check-btn'); if(check) check.disabled = true;
+    const redo = card.querySelector('.redo-btn');
+    if(ok){
+      if(redo) redo.style.display='none';
+      const fs = card.querySelector('fieldset'); if(fs) fs.disabled = true;
+      card.querySelectorAll('select').forEach(s=>s.disabled=true);
+      card.querySelectorAll('.move .btn').forEach(b=>b.disabled=true);
+    }else{
+      if(redo) redo.style.display='inline-flex';
+    }
+  }
+  function clearCard(card){
+    card.classList.remove('correct','incorrect');
+    const fb = card.querySelector('.fb'); fb.style.display='none'; fb.textContent='';
+    const check = card.querySelector('.check-btn'); if(check) check.disabled = true;
+  }
+  function updateNext(){
+    const allOK = Object.values(done).every(v=>v===true);
+    const next = document.getElementById('nextLink');
+    if(allOK){ next.classList.remove('disabled'); next.setAttribute('aria-disabled','false'); }
+  }
+
+  /* Q1 單選 */
+  (function(){
+    const card = document.getElementById('q1');
+    const radios = card.querySelectorAll('input[type=radio]');
+    const btn = card.querySelector('.check-btn');
+    const redo = card.querySelector('.redo-btn');
+    card.addEventListener('change', ()=>{ btn.disabled = ![...radios].some(r=>r.checked); });
+    btn.addEventListener('click', ()=>{
+      const val = [...radios].find(r=>r.checked)?.value;
+      const ok = val==='B';
+      if(ok){ done.q1=true; markCard(card,true,'✅ 答對！靠根部儲存的養分，隔年由韌皮部「向上」供應開花。'); }
+      else{ markCard(card,false,'❌ 提醒：運輸「養分」的是韌皮部；木質部主要運輸水與礦物質。'); }
+      updateNext();
+    });
+    redo.addEventListener('click', ()=>{
+      radios.forEach(r=>r.checked=false);
+      const fs = card.querySelector('fieldset'); if(fs) fs.disabled=false;
+      clearCard(card);
+    });
+  })();
+
+  /* Q2 多選（答案：花苞、花朵、幼葉；成熟葉為供應部位） */
+  (function(){
+    const card = document.getElementById('q2');
+    const boxes = card.querySelectorAll('input[type=checkbox]');
+    const btn = card.querySelector('.check-btn');
+    const redo = card.querySelector('.redo-btn');
+    const answer = new Set(['花苞','花朵','幼葉']); // 成熟葉是供應部位
+    function enableCheck(){ btn.disabled = ![...boxes].some(b=>b.checked); }
+    card.addEventListener('change', enableCheck);
+    btn.addEventListener('click', ()=>{
+      const chosen = new Set([...boxes].filter(b=>b.checked).map(b=>b.value));
+      const ok = chosen.size===answer.size && [...answer].every(x=>chosen.has(x));
+      if(ok){ done.q2=true; markCard(card,true,'✅ 很棒！需求部位包含花苞、花朵與幼葉；成熟葉通常是「供應部位」。'); }
+      else{ markCard(card,false,'❌ 再想想：挑選會消耗或需要養分的部位（花苞/花朵/幼葉），成熟葉屬於供應端。'); }
+      updateNext();
+    });
+    redo.addEventListener('click', ()=>{
+      boxes.forEach(b=>b.checked=false);
+      const fs = card.querySelector('fieldset'); if(fs) fs.disabled=false;
+      clearCard(card); enableCheck();
+    });
+  })();
+
+  /* Q3 排序（載入隨機打散 + 上下移） */
+  (function(){
+    const card = document.getElementById('q3');
+    const list = card.querySelector('#ord');
+    const btn = card.querySelector('.check-btn');
+    const redo = card.querySelector('.redo-btn');
+
+    (function shuffleList(){
+      const items = [...list.children];
+      for(let i = items.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      items.forEach(li => list.appendChild(li));
+    })();
+
+    list.addEventListener('click', (e)=>{
+      const b = e.target.closest('button[data-move]');
+      if(!b) return;
+      const li = e.target.closest('li');
+      if(b.dataset.move==='up' && li.previousElementSibling){
+        list.insertBefore(li, li.previousElementSibling);
+      }
+      if(b.dataset.move==='down' && li.nextElementSibling){
+        list.insertBefore(li.nextElementSibling, li);
+      }
+    });
+
+    btn.addEventListener('click', ()=>{
+      const order = [...list.children].map(li=>li.dataset.key).join('');
+      const ok = order === 'ABCD';
+      if(ok){ done.q3=true; markCard(card,true,'✅ 完美順序！秋冬「上→下」儲存，春天「下→上」供應。'); }
+      else{ markCard(card,false,'❌ 順序未完成：應為 A→B→C→D。'); }
+      updateNext();
+    });
+
+    redo.addEventListener('click', ()=>{
+      card.querySelectorAll('.move .btn').forEach(b=>b.disabled=false);
+      clearCard(card);
+      const items = [...list.children];
+      for(let i = items.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      items.forEach(li => list.appendChild(li));
+      const check = card.querySelector('.check-btn'); check.disabled=false;
+    });
+  })();
+
+  /* Q4 配對 */
+  (function(){
+    const card = document.getElementById('q4');
+    const selA = document.getElementById('sel-autumn');
+    const selS = document.getElementById('sel-spring');
+    const btn = card.querySelector('.check-btn');
+    const redo = card.querySelector('.redo-btn');
+    function enable(){ btn.disabled = !(selA.value && selS.value); }
+    selA.addEventListener('change', enable);
+    selS.addEventListener('change', enable);
+    btn.addEventListener('click', ()=>{
+      const ok = (selA.value==='down' && selS.value==='up');
+      if(ok){ done.q4=true; markCard(card,true,'✅ 正確！秋冬主要「上到下」（葉→根儲存），春天主要「下到上」（根→莖/葉/花）。'); }
+      else{ markCard(card,false,'❌ 再試一次：秋冬葉製造後往下儲存；春天再往上供應。'); }
+      updateNext();
+    });
+    redo.addEventListener('click', ()=>{
+      selA.value=''; selS.value='';
+      card.querySelectorAll('select').forEach(s=>s.disabled=false);
+      clearCard(card); enable();
+    });
+  })();
+</script>
+</body>
+</html>

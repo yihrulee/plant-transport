@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>植物的運輸_學習頁面_植物體內的水分運輸</title>
+<style>
+  :root{
+    --c1:#0ea5e9;  /* water */
+    --c2:#0d9488;  /* xylem */
+    --c3:#a855f7;  /* osmosis */
+    --c4:#f59e0b;  /* transpiration */
+    --c5:#22c55e;  /* stoma */
+    --c6:#b45309;  /* guard cells */
+    --ok:#16a34a;
+    --bad:#dc2626;
+    --card:#ffffff;
+    --ink:#1f2937;
+    --muted:#6b7280;
+    --bg:#f8fafc;
+    --edge:#e5e7eb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:0; font-family: "Microsoft JhengHei","Noto Sans TC",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.65;
+  }
+  header{
+    padding:28px 20px 10px; text-align:center;
+    background:linear-gradient(180deg,#ecfeff,transparent);
+  }
+  h1{margin:0 0 6px; font-size: clamp(22px, 3.6vw, 34px);}
+  .subtitle{color:var(--muted); font-size:clamp(14px,2.3vw,16px)}
+  main{max-width:1100px; margin:0 auto; padding: 12px 16px 90px;}
+  .card{
+    background:var(--card); border:1px solid var(--edge); border-radius:14px; padding:18px; margin:14px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+  .flex-row{
+    display:grid; grid-template-columns: 1.2fr .9fr; gap:16px; align-items:center;
+  }
+  .flex-row.reverse{ grid-template-columns: .9fr 1.2fr; }
+  .flex-col{ display:block }
+  figure{margin:0}
+  figure img{width:100%; height:auto; display:block; border-radius:12px; border:1px solid var(--edge)}
+  h2{margin:0 0 8px; font-size: clamp(18px, 2.8vw, 22px);}
+  p{margin:8px 0}
+  .k-water{ color:var(--c1); font-weight:700 }
+  .k-xylem{ color:var(--c2); font-weight:700 }
+  .k-osmo{  color:var(--c3); font-weight:700 }
+  .k-trans{ color:var(--c4); font-weight:700 }
+  .k-stoma{ color:var(--c5); font-weight:700 }
+  .k-guard{ color:var(--c6); font-weight:700 }
+
+  /* Q&A */
+  .question{ border:1px dashed var(--edge); border-radius:14px; padding:14px; margin:18px 0; background:#fff }
+  .question.correct{ border-color: var(--ok); background: #e7fbe9}
+  .question.incorrect{ border-color: var(--bad); background: #ffecec}
+  .q-title{ font-weight:700; margin-bottom:6px }
+  .options{margin:6px 0 8px}
+  .options label{ display:block; margin:6px 0; cursor:pointer}
+  .inline-selects{ display:grid; gap:10px; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); margin:8px 0}
+  select, input[type="text"]{
+    width:100%; padding:9px 10px; border-radius:10px; border:1px solid var(--edge); background:#fff; font-size:15px;
+  }
+  .controls{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px }
+  button{
+    appearance:none; border:1px solid var(--edge); background:#111827; color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer;
+    font-size:15px;
+  }
+  button.secondary{ background:#fff; color:#111827 }
+  button:disabled{ opacity:.5; cursor:not-allowed }
+  .feedback{
+    display:none; margin-top:8px; border-radius:10px; padding:10px; border:1px solid;
+  }
+  .feedback.ok{ display:block; background:#ecfdf5; border-color:var(--ok); color:#065f46 }
+  .feedback.no{ display:block; background:#fffbeb; border-color:#f59e0b; color:#92400e }
+  .hint{ color:var(--muted); font-size:13px }
+
+  /* Footer nav */
+  .page-nav{
+    position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--edge);
+    padding:10px 16px; display:flex; justify-content:center; gap:14px;
+  }
+  .page-nav a{
+    display:inline-flex; align-items:center; gap:6px; text-decoration:none;
+    background:#111827; color:#fff; padding:10px 14px; border-radius:12px; border:1px solid var(--edge);
+  }
+  .page-nav a.secondary{ background:#fff; color:#111827 }
+  .page-nav a.disabled{ opacity:.5; pointer-events:none; }
+  .legend{
+    display:flex; gap:12px; flex-wrap:wrap; font-size:13px; color:var(--muted); margin:2px 0 8px;
+  }
+  .chip{ display:inline-flex; align-items:center; gap:6px; background:#f1f5f9; border:1px solid var(--edge); padding:4px 8px; border-radius:999px }
+  .dot{ width:10px; height:10px; border-radius:50% }
+  @media (max-width: 860px){
+    .flex-row{ grid-template-columns: 1fr; }
+    .flex-row.reverse{ grid-template-columns: 1fr; }
+  }
+
+  /* 需求：標題不要有小字（副標）、文本中的小字與點點也不要 */
+  header .subtitle{ display:none !important; }
+  /* 文本段落下方的小字圖例與圓點一併移除 */
+  .legend, .legend .chip, .legend .dot{ display:none !important; }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>植物的運輸＿學習頁面＿植物體內的水分運輸</h1>
+  <div class="subtitle">閱讀重點 × 關鍵字標示 × 多元互動練習</div>
+</header>
+
+<main>
+  <section class="card flex-row" aria-labelledby="s1h">
+    <div class="flex-col">
+      <h2 id="s1h">從根到葉：水分的上行之路</h2>
+      <p>植物自根部吸收<span class="k-water">水分</span>後，利用維管束中的<span class="k-xylem">木質部</span>將<span class="k-water">水分</span>自根部往上運輸至莖、葉和花；除了<span class="k-water">水分</span>之外，<span class="k-water">礦物質</span>也由根部吸收向上運輸。</p>
+      <div class="legend" aria-hidden="true">
+        <span class="chip"><span class="dot" style="background:var(--c1)"></span>水分／礦物質</span>
+        <span class="chip"><span class="dot" style="background:var(--c2)"></span>木質部</span>
+      </div>
+    </div>
+    <figure>
+      <img src="6_1.png" alt="根、莖、葉之間的木質部運輸示意圖" />
+    </figure>
+  </section>
+
+  <section class="card" aria-labelledby="s2h">
+    <h2 id="s2h">根毛與滲透：把水帶進維管束</h2>
+    <p>根部的表皮細胞向外突出，形成<span class="k-guard" style="color:#8b5cf6;font-weight:700">根毛</span>，以增加吸收的表面積，<span class="k-osmo">水分藉由滲透作用</span>，擴散進入根部的維管束。</p>
+    <div class="legend" aria-hidden="true">
+      <span class="chip"><span class="dot" style="background:var(--c3)"></span>滲透作用</span>
+      <span class="chip"><span class="dot" style="background:#8b5cf6"></span>根毛</span>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="s3h">
+    <h2 id="s3h">蒸散拉力：把水一路向上拉</h2>
+    <p>植物根部吸收的水除供應細胞利用外，大部分變成水蒸氣由<span class="k-stoma">氣孔</span>散失，這種現象稱為<span class="k-trans">蒸散作用</span>。根、莖和葉的<span class="k-xylem">木質部</span>上下連通，形成充滿水的細管，當<span class="k-trans">水分由氣孔蒸散</span>時，細管內的水會被向上拉升，於是莖內的水上升至葉，同時根部的水也上升至莖，構成水分由下往上的運輸途徑。</p>
+    <figure style="margin-top:10px">
+      <img src="6_2.png" alt="蒸散作用與木質部連通形成拉力的示意圖" />
+    </figure>
+    <div class="legend" aria-hidden="true">
+      <span class="chip"><span class="dot" style="background:var(--c4)"></span>蒸散作用</span>
+      <span class="chip"><span class="dot" style="background:var(--c5)"></span>氣孔</span>
+    </div>
+  </section>
+
+  <!-- 第四段移除右側圖片，並去除段落編號 -->
+  <section class="card" aria-labelledby="s4h">
+    <h2 id="s4h">高大樹木也靠蒸散拉力</h2>
+    <p>即使是高大的樹木，<span class="k-trans">蒸散作用</span>也是<span class="k-xylem">木質部</span>向上運輸的主要動力來源。因此，水分也能由根部運送至樹木的頂端。</p>
+  </section>
+
+  <section class="card flex-row" aria-labelledby="s5h">
+    <div class="flex-col">
+      <h2 id="s5h">氣孔與保衛細胞：開關決定蒸散強弱</h2>
+      <p><span class="k-stoma">氣孔</span>是水分蒸散和氣體（氧氣與二氧化碳）出入葉片的主要通道，大多分布在葉片上，且氣孔由<span class="k-guard">保衛細胞</span>控制開閉。包圍<span class="k-stoma">氣孔</span>的兩個<span class="k-guard">保衛細胞</span>因吸水而膨脹彎曲，導致氣孔張開；反之，當<span class="k-guard">保衛細胞</span>水分移出時，氣孔則關閉。氣孔通常在白天張開、晚上關閉，因此白天的<span class="k-trans">蒸散作用</span>比較旺盛；不過，當乾燥、缺水時，即使在白天，<span class="k-stoma">氣孔</span>也會關閉以減少水分的散失，避免植物失水過多。</p>
+    </div>
+    <figure>
+      <img src="6_3.png" alt="氣孔與保衛細胞控制開閉的放大示意圖" />
+    </figure>
+  </section>
+
+  <!-- Interactions (unchanged) -->
+  <section class="card" aria-labelledby="quizH">
+    <h2 id="quizH">互動練習</h2>
+
+    <!-- Q1: 單選 -->
+    <div class="question" id="q1">
+      <div class="q-title">Q1．哪一個構造負責將<span class="k-water">水分</span>與<span class="k-water">礦物質</span>自根部向上運輸？（單選）</div>
+      <div class="options" role="radiogroup" aria-label="Q1 單選題">
+        <label><input type="radio" name="q1" value="木質部"> 木質部</label>
+        <label><input type="radio" name="q1" value="韌皮部"> 韌皮部</label>
+        <label><input type="radio" name="q1" value="形成層"> 形成層</label>
+        <label><input type="radio" name="q1" value="表皮"> 表皮</label>
+      </div>
+      <div class="controls">
+        <button class="check" data-q="q1" disabled>檢查答案</button>
+        <button class="redo secondary" data-q="q1" style="display:none">重做本題</button>
+        <span class="hint">請先選擇一個選項</span>
+      </div>
+      <div class="feedback" aria-live="polite"></div>
+    </div>
+
+    <!-- Q2: 複選 -->
+    <div class="question" id="q2">
+      <div class="q-title">Q2．關於<span class="k-trans">蒸散作用</span>與水分上升的敘述，哪些是正確的？（多選）</div>
+      <div class="options" role="group" aria-label="Q2 多選題">
+        <label><input type="checkbox" name="q2" value="A"> 蒸散是水蒸氣經由<span class="k-stoma">氣孔</span>散失。</label>
+        <label><input type="checkbox" name="q2" value="B"> 蒸散產生的拉力能使<span class="k-xylem">木質部</span>中的水向上移動。</label>
+        <label><input type="checkbox" name="q2" value="C"> 蒸散只在夜間旺盛。</label>
+        <label><input type="checkbox" name="q2" value="D"> 乾燥缺水時，即使白天氣孔也可能關閉以減少水分散失。</label>
+      </div>
+      <div class="controls">
+        <button class="check" data-q="q2" disabled>檢查答案</button>
+        <button class="redo secondary" data-q="q2" style="display:none">重做本題</button>
+        <span class="hint">至少勾選一項</span>
+      </div>
+      <div class="feedback" aria-live="polite"></div>
+    </div>
+
+    <!-- Q3: 配對（下拉選單） -->
+    <div class="question" id="q3">
+      <div class="q-title">Q3．請用下拉選單完成名詞配對。（全選）</div>
+      <div class="inline-selects">
+        <label>增加吸收表面積的是：
+          <select data-key="0">
+            <option value="">— 請選擇 —</option>
+            <option>根毛</option>
+            <option>氣孔</option>
+            <option>保衛細胞</option>
+            <option>木質部</option>
+            <option>蒸散作用</option>
+            <option>滲透作用</option>
+          </select>
+        </label>
+        <label>控制氣孔開閉的是：
+          <select data-key="1">
+            <option value="">— 請選擇 —</option>
+            <option>根毛</option>
+            <option>氣孔</option>
+            <option>保衛細胞</option>
+            <option>木質部</option>
+            <option>蒸散作用</option>
+            <option>滲透作用</option>
+          </select>
+        </label>
+        <label>水分進入根部的主要機制是：
+          <select data-key="2">
+            <option value="">— 請選擇 —</option>
+            <option>根毛</option>
+            <option>氣孔</option>
+            <option>保衛細胞</option>
+            <option>木質部</option>
+            <option>蒸散作用</option>
+            <option>滲透作用</option>
+          </select>
+        </label>
+      </div>
+      <div class="controls">
+        <button class="check" data-q="q3" disabled>檢查答案</button>
+        <button class="redo secondary" data-q="q3" style="display:none">重做本題</button>
+        <span class="hint">三個都要選擇</span>
+      </div>
+      <div class="feedback" aria-live="polite"></div>
+    </div>
+
+    <!-- Q4: 情境判斷（雙下拉） -->
+    <div class="question" id="q4">
+      <div class="q-title">Q4．情境題：夏日正午且連日乾燥少雨時，下列判斷何者正確？（兩項皆需正確）</div>
+      <div class="inline-selects">
+        <label>氣孔狀態：
+          <select data-k="a">
+            <option value="">— 請選擇 —</option>
+            <option value="open">多半張開</option>
+            <option value="close">傾向關閉以減少散失</option>
+          </select>
+        </label>
+        <label>此時木質部水分上行的主要動力：
+          <select data-k="b">
+            <option value="">— 請選擇 —</option>
+            <option value="rootpressure">根壓</option>
+            <option value="transpull">蒸散作用提供的拉力</option>
+          </select>
+        </label>
+      </div>
+      <div class="controls">
+        <button class="check" data-q="q4" disabled>檢查答案</button>
+        <button class="redo secondary" data-q="q4" style="display:none">重做本題</button>
+        <span class="hint">兩個下拉都要選擇</span>
+      </div>
+      <div class="feedback" aria-live="polite"></div>
+    </div>
+
+  </section>
+</main>
+
+<nav class="page-nav" aria-label="頁面導覽">
+  <a class="secondary" href="./5.html">← 上一頁</a>
+  <a id="nextBtn" class="disabled" href="./7.html" aria-disabled="true">下一頁 →</a>
+</nav>
+
+<script>
+(function(){
+  const qStatus = { q1:false, q2:false, q3:false, q4:false };
+  const nextBtn = document.getElementById('nextBtn');
+
+  function updateNextUnlock(){
+    const allOk = Object.values(qStatus).every(Boolean);
+    if(allOk){
+      nextBtn.classList.remove('disabled');
+      nextBtn.setAttribute('aria-disabled','false');
+    }else{
+      nextBtn.classList.add('disabled');
+      nextBtn.setAttribute('aria-disabled','true');
+    }
+  }
+
+  // Helpers
+  function setQuestionState(qEl, ok, msg){
+    const fb = qEl.querySelector('.feedback');
+    qEl.classList.remove('correct','incorrect');
+    if(ok){
+      qEl.classList.add('correct');
+      fb.className = 'feedback ok';
+      fb.innerHTML = msg || '答對了！';
+    }else{
+      qEl.classList.add('incorrect');
+      fb.className = 'feedback no';
+      fb.innerHTML = msg || '再想一想，根據上面的文本修正你的答案。';
+    }
+  }
+
+  function lockInputs(qEl, locked){
+    // disable all inputs within question
+    const inputs = qEl.querySelectorAll('input, select, textarea');
+    inputs.forEach(el => { el.disabled = !!locked; });
+  }
+
+  function resetQuestion(qEl){
+    // clear inputs
+    qEl.querySelectorAll('input[type="radio"]').forEach(el => el.checked=false);
+    qEl.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked=false);
+    qEl.querySelectorAll('select').forEach(el => el.value='');
+    // visuals
+    qEl.classList.remove('correct','incorrect');
+    const fb = qEl.querySelector('.feedback');
+    fb.className = 'feedback';
+    fb.innerHTML = '';
+    // buttons
+    const checkBtn = qEl.querySelector('button.check');
+    const redoBtn  = qEl.querySelector('button.redo');
+    checkBtn.disabled = true;
+    redoBtn.style.display = 'none';
+    // unlock inputs
+    lockInputs(qEl, false);
+  }
+
+  function markAnsweredState(qEl){
+    const checkBtn = qEl.querySelector('button.check');
+    // Consider answered if any radio or checkbox is selected, or all selects picked
+    const radios = qEl.querySelectorAll('input[type="radio"]');
+    const checks = qEl.querySelectorAll('input[type="checkbox"]');
+    const selects = qEl.querySelectorAll('select');
+
+    let answered = false;
+    if(radios.length){
+      answered = Array.from(radios).some(x=>x.checked);
+    }else if(checks.length){
+      answered = Array.from(checks).some(x=>x.checked);
+    }
+    if(selects.length){
+      // if there are selects, require all to have a value
+      answered = Array.from(selects).every(s=>s.value!=='');
+    }
+    checkBtn.disabled = !answered;
+  }
+
+  // Q1
+  (function(){
+    const qEl = document.getElementById('q1');
+    qEl.addEventListener('change', ()=>markAnsweredState(qEl));
+    const checkBtn = qEl.querySelector('.check');
+    const redoBtn  = qEl.querySelector('.redo');
+    checkBtn.addEventListener('click', ()=>{
+      const val = (qEl.querySelector('input[name="q1"]:checked')||{}).value;
+      const ok = (val === '木質部');
+      setQuestionState(qEl, ok, ok ? '正確！<b>木質部</b>將水與礦物質由根向上運輸。'
+                                   : '提示：文本第一段提到「利用維管束中的木質部將水分向上運輸」。');
+      qStatus.q1 = ok;
+      checkBtn.disabled = true; // 鎖定按鈕
+      if(!ok){ redoBtn.style.display = 'inline-flex'; }
+      else{ lockInputs(qEl, true); }
+      updateNextUnlock();
+    });
+    redoBtn.addEventListener('click', ()=>{
+      resetQuestion(qEl);
+      qStatus.q1 = false;
+      updateNextUnlock();
+    });
+  })();
+
+  // Q2
+  (function(){
+    const qEl = document.getElementById('q2');
+    qEl.addEventListener('change', ()=>markAnsweredState(qEl));
+    const checkBtn = qEl.querySelector('.check');
+    const redoBtn  = qEl.querySelector('.redo');
+    checkBtn.addEventListener('click', ()=>{
+      const chosen = Array.from(qEl.querySelectorAll('input[name="q2"]:checked')).map(x=>x.value);
+      const correct = ['A','B','D'];
+      const ok = chosen.length===3 && correct.every(c=>chosen.includes(c)) && chosen.every(x=>correct.includes(x));
+      setQuestionState(qEl, ok,
+        ok ? '做得好！蒸散是由氣孔散失水蒸氣，產生的拉力能使木質部水柱上升；乾旱時氣孔會關閉以減少散失。'
+           : '再仔細確認：蒸散是否在夜間最旺？乾旱時氣孔會如何調節？請勾選所有正確選項。');
+      qStatus.q2 = ok;
+      checkBtn.disabled = true;
+      if(!ok){ redoBtn.style.display = 'inline-flex'; }
+      else{ lockInputs(qEl, true); }
+      updateNextUnlock();
+    });
+    redoBtn.addEventListener('click', ()=>{
+      resetQuestion(qEl);
+      qStatus.q2 = false;
+      updateNextUnlock();
+    });
+  })();
+
+  // Q3
+  (function(){
+    const qEl = document.getElementById('q3');
+    qEl.addEventListener('change', ()=>markAnsweredState(qEl));
+    const checkBtn = qEl.querySelector('.check');
+    const redoBtn  = qEl.querySelector('.redo');
+    checkBtn.addEventListener('click', ()=>{
+      const expects = ['根毛','保衛細胞','滲透作用'];
+      const selects = Array.from(qEl.querySelectorAll('select')).sort((a,b)=> (a.dataset.key||'').localeCompare(b.dataset.key||''));
+      const picks = selects.map(s=>s.value);
+      const ok = expects.every((v,i)=> v===picks[i]);
+      setQuestionState(qEl, ok,
+        ok ? '正確！根毛增加表面積、保衛細胞控制開閉、而水進入根部主要靠滲透作用。'
+           : '提示：請回到第二、五段找關鍵字：「根毛」、「保衛細胞」、「滲透作用」。');
+      qStatus.q3 = ok;
+      checkBtn.disabled = true;
+      if(!ok){ redoBtn.style.display = 'inline-flex'; }
+      else{ lockInputs(qEl, true); }
+      updateNextUnlock();
+    });
+    redoBtn.addEventListener('click', ()=>{
+      resetQuestion(qEl);
+      qStatus.q3 = false;
+      updateNextUnlock();
+    });
+  })();
+
+  // Q4
+  (function(){
+    const qEl = document.getElementById('q4');
+    qEl.addEventListener('change', ()=>markAnsweredState(qEl));
+    const checkBtn = qEl.querySelector('.check');
+    const redoBtn  = qEl.querySelector('.redo');
+    checkBtn.addEventListener('click', ()=>{
+      const a = qEl.querySelector('select[data-k="a"]').value;
+      const b = qEl.querySelector('select[data-k="b"]').value;
+      const ok = (a==='close' && b==='transpull');
+      setQuestionState(qEl, ok,
+        ok ? '答對了！乾燥時為減少水分散失，氣孔傾向關閉；而水分上行主要由蒸散拉力驅動。'
+           : '再想想：乾燥缺水時氣孔會如何調節？水分長距離上行主要由何者提供動力？');
+      qStatus.q4 = ok;
+      checkBtn.disabled = true;
+      if(!ok){ redoBtn.style.display = 'inline-flex'; }
+      else{ lockInputs(qEl, true); }
+      updateNextUnlock();
+    });
+    redoBtn.addEventListener('click', ()=>{
+      resetQuestion(qEl);
+      qStatus.q4 = false;
+      updateNextUnlock();
+    });
+  })();
+
+})();
+</script>
+</body>
+</html>

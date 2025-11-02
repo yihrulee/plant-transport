@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>影響蒸散作用因素探討｜芹菜 × 量筒 × 液面下降模擬</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f7fb; --ink:#1f2937; --accent:#b91c1c; --leaf:#16a34a; --leaf-dark:#0f7c35;
+    --card:#ffffff; --muted:#6b7280; --ring:#e5e7eb; --ok:#16a34a; --warn:#d97706; --err:#dc2626;
+  }
+  *{ box-sizing:border-box } html,body{ height:100% }
+  body{ margin:0; background:var(--bg); color:var(--ink);
+        font-family:"Segoe UI","Noto Sans TC",system-ui,-apple-system,Arial,sans-serif;
+        display:flex; flex-direction:column; gap:24px; }
+  header{ text-align:center; padding:28px 16px 8px; }
+  h1{ margin:0; font-size:clamp(28px,4vw,44px); font-weight:800; letter-spacing:.5px; }
+  .sub{ margin-top:8px; color:var(--muted); font-size:clamp(14px,2.2vw,16px); }
+  .container{ width:min(1100px,96%); margin:0 auto; display:flex; flex-direction:column; gap:16px; }
+  .stage{ background:var(--card); border:1px solid var(--ring); border-radius:16px; padding:16px; box-shadow:0 6px 20px rgba(0,0,0,.05); }
+  .row{ display:flex; gap:16px; align-items:stretch; flex-wrap:wrap; margin-top:8px; }
+  .col{ flex:1 1 320px; }
+  .controls{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; padding:8px 0 4px; margin-bottom:6px; }
+  button{ appearance:none; border:none; cursor:pointer; color:#fff; font-weight:800; padding:12px 18px; border-radius:12px; font-size:16px;
+          transition:transform .05s ease, filter .2s ease, box-shadow .2s ease, opacity .2s ease; box-shadow:0 6px 14px rgba(0,0,0,.08); }
+  button:disabled{ opacity:.55; cursor:not-allowed } button:active{ transform:translateY(1px) }
+  button:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(59,130,246,.35) }
+  #startBtn{ background:linear-gradient(135deg,#22c55e,#16a34a) } #startBtn:hover{ filter:brightness(1.05) }
+  #resultBtn{ background:linear-gradient(135deg,#06b6d4,#4f46e5) }
+  #resultBtn[disabled]{ background:linear-gradient(135deg,#9ca3af,#6b7280) }
+  #submitBtn{ background:linear-gradient(135deg,#f43f5e,#fb7185) } #submitBtn:hover{ filter:brightness(1.05) }
+  .status{ color:var(--muted); font-size:14px; padding-left:6px }
+  .label{ text-align:center; font-weight:700; margin-bottom:8px }
+  .cylinder{ position:relative; width:min(240px,44vw); height:320px; border-radius:14px 14px 24px 24px; border:3px solid #cbd5e1;
+             background:radial-gradient(120% 20px at 50% 10px,rgba(255,255,255,.9),rgba(255,255,255,0) 70%) no-repeat, linear-gradient(180deg,#f8fafc,#eef2f7);
+             overflow:visible; box-shadow:inset 0 0 0 6px rgba(255,255,255,.6); margin-top:64px; }
+  .ticks{ position:absolute; right:8px; bottom:0; height:90%; width:26px; pointer-events:none }
+  .tick-line{ position:absolute; right:6px; height:2px; width:18px; background:#cbd5e1; opacity:.9; border-radius:1px }
+  .tick-line.major{ width:22px; height:2.4px; background:#94a3b8 }
+  .tick-label{ position:absolute; right:0; transform:translateY(50%); font-size:11px; color:#9ca3af }
+  .liquid{ position:absolute; left:0; bottom:0; width:100%; height:90%;
+           background:linear-gradient(180deg,rgba(220,38,38,.85),rgba(185,28,28,.95)), repeating-linear-gradient(45deg,rgba(255,255,255,.15) 0 8px,rgba(255,255,255,.07) 8px 16px);
+           transition:height 5s linear; border-top:4px solid rgba(255,255,255,.7) }
+  .celery{ position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:18px; height:380px;
+           background:linear-gradient(180deg,#22c55e,#16a34a); border-radius:12px; box-shadow:inset 0 0 0 2px rgba(255,255,255,.3); z-index:2 }
+  .celery::after{ content:""; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:26px; height:6px; background:#0f7c35; border-radius:6px 6px 0 0; opacity:.7 }
+  .leaves{ position:absolute; top:-24px; left:50%; transform:translateX(-50%); width:140px; height:80px; pointer-events:none }
+  .leaf{ position:absolute; width:52px; height:52px; background:radial-gradient(circle at 30% 30%,#34d399,#16a34a);
+         border-radius:60% 40% 60% 40% / 60% 40% 60% 40%; filter:drop-shadow(0 2px 0 rgba(0,0,0,.1)) }
+  .leaf.l1{ left:4px; top:10px; transform:rotate(-18deg) } .leaf.l2{ left:46px; top:0; transform:rotate(10deg) } .leaf.l3{ left:88px; top:12px; transform:rotate(28deg) }
+  .hidden{ display:none !important } .visually-hidden{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
+  table{ width:100%; border-collapse:collapse; font-size:15px; background:#fff; border-radius:12px; overflow:hidden }
+  th,td{ padding:12px 10px; border-bottom:1px solid #e5e7eb; text-align:center } th{ background:#f3f4f6; font-weight:800 } .kpi{ font-weight:800 }
+  .chart-wrap,.table-wrap{ background:#fff; border:1px solid var(--ring); border-radius:16px; padding:16px }
+  .qa{ display:grid; gap:12px; grid-template-columns:1fr }
+  @media (min-width:900px){ .qa{ grid-template-columns:1fr 1fr } .qa .full{ grid-column:1 / -1 } }
+  .q-card{ background:#fff; border:1px solid var(--ring); border-radius:12px; padding:12px }
+  .q-card h4{ margin:0 0 6px; font-size:16px }
+  textarea{ width:100%; min-height:100px; resize:vertical; padding:10px; border-radius:10px; border:1px solid #d1d5db; font-family:inherit; font-size:14px; outline:none }
+  .id-grid{ display:grid; grid-template-columns:1fr; gap:12px }
+  @media (min-width:720px){ .id-grid{ grid-template-columns:1.2fr .8fr 1fr } }
+  .field{ display:flex; flex-direction:column; gap:6px } .field label{ font-size:14px; color:#374151; font-weight:700 }
+  .field input{ height:42px; padding:0 12px; border-radius:10px; border:1px solid #d1d5db; font-size:15px; outline:none }
+  .field input.invalid{ border-color:var(--err); box-shadow:0 0 0 3px rgba(220,38,38,.15) }
+  .submit-bar{ display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:8px }
+  .badge{ font-size:13px; padding:6px 10px; border-radius:999px; background:#f3f4f6; color:#111827 }
+  .badge.ok{ background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0 } .badge.warn{ background:#fffbeb; color:#92400e; border:1px solid #fde68a }
+  .badge.err{ background:#fef2f2; color:#991b1b; border:1px solid #fecaca }
+  .hints{ font-size:13px; color:#6b7280; line-height:1.5; text-align:center } .hints b{ color:#ef4444 }
+  .footer-nav{ display:flex; justify-content:space-between; align-items:center; gap:12px }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border-radius:12px; font-weight:800; text-decoration:none; color:#fff;
+        transition:opacity .2s ease, transform .05s ease, filter .2s ease; box-shadow:0 6px 14px rgba(0,0,0,.08) }
+  .btn:active{ transform:translateY(1px) } .btn:hover{ filter:brightness(1.05) }
+  #prevLink{ background:linear-gradient(135deg,#f59e0b,#f97316) }
+  #endLink{ background:linear-gradient(135deg,#8b5cf6,#6366f1) }
+  #endLink[aria-disabled="true"]{ background:linear-gradient(135deg,#9ca3af,#6b7280); pointer-events:none; cursor:not-allowed; filter:grayscale(.1) }
+  #endLink.unlocked{ background:linear-gradient(135deg,#22c55e,#16a34a) }
+</style>
+</head>
+<body>
+  <header>
+    <h1>影響蒸散作用因素探討</h1>
+    <div class="sub">以芹菜插入 10 mL 量筒，觀察紅色液體液面下降的情形，並以「液面散失的水量」代表蒸散速率。</div>
+  </header>
+
+  <main class="container">
+    <section class="stage">
+      <div class="controls">
+        <button id="startBtn" aria-label="開始實驗">▶ 開始實驗</button>
+        <button id="resultBtn" disabled aria-disabled="true">📊 觀看實驗結果</button>
+        <span id="status" class="status">準備就緒：點擊「開始實驗」。</span>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <div class="label">無葉子（對照組）</div>
+          <div class="cylinder" aria-label="無葉子組量筒">
+            <div class="ticks" aria-hidden="true"></div>
+            <div class="celery" aria-hidden="true"></div>
+            <div id="liqA" class="liquid" role="img" aria-label="紅色液體液面（無葉子組）"></div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="label">有葉子（實驗組）</div>
+          <div class="cylinder" aria-label="有葉子組量筒">
+            <div class="ticks" aria-hidden="true"></div>
+            <div class="celery" aria-hidden="true">
+              <div class="leaves" aria-hidden="true">
+                <div class="leaf l1"></div>
+                <div class="leaf l2"></div>
+                <div class="leaf l3"></div>
+              </div>
+            </div>
+            <div id="liqB" class="liquid" role="img" aria-label="紅色液體液面（有葉子組）"></div>
+          </div>
+        </div>
+      </div>
+      <div class="footnote" style="color:#6b7280;">提示：液面高度對應「<b>結束水量</b>」，表格中的「<b>散失水量</b>」＝ 10.0 − 結束水量。側邊刻度每一條約代表 1 mL（與下方數據一致）。</div>
+    </section>
+
+    <section id="resultsSection" class="stage hidden" aria-live="polite" aria-label="實驗結果">
+      <h3 style="margin:6px 0 12px; font-size:20px;">實驗結果（以液面散失水量 mL 表示）</h3>
+      <div class="row">
+        <div class="col">
+          <div class="table-wrap">
+            <div style="overflow:auto; border-radius:12px;">
+              <table aria-describedby="tableDesc">
+                <caption id="tableDesc" class="visually-hidden">兩組起始與結束水量、散失水量比較</caption>
+                <thead>
+                  <tr><th>組別</th><th>起始水量 (mL)</th><th>結束水量 (mL)</th><th>散失水量 (mL)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>無葉子</td><td class="kpi">10.0</td><td id="endA">—</td><td id="lossA" class="kpi">—</td></tr>
+                  <tr><td>有葉子</td><td class="kpi">10.0</td><td id="endB">—</td><td id="lossB" class="kpi">—</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><td>差值（有葉子－無葉子）</td><td>—</td><td id="diffEnd">—</td><td id="diffLoss" class="kpi">—</td></tr>
+                </tfoot>
+              </table>
+            </div>
+            <div class="footnote">註：本模擬為短時間觀察，實際課堂可延長時間並記錄多次測量。</div>
+          </div>
+        </div>
+        <div class="col"><div class="chart-wrap"><canvas id="barChart" height="260" aria-label="散失水量長條圖" role="img"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- 問題作答（含身分欄） -->
+    <section id="qaSection" class="stage hidden">
+      <h3 style="margin:6px 0 12px; font-size:20px;">請先填寫身分，再回答問題</h3>
+      <div class="id-grid" style="margin-bottom:10px;">
+        <div class="field"><label for="cls">班級</label><input id="cls" name="cls" placeholder="例如：707" autocomplete="section-class class"></div>
+        <div class="field"><label for="seat">座號</label><input id="seat" name="seat" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|30)$" maxlength="2" placeholder="01～30" autocomplete="on"></div>
+        <div class="field"><label for="stu">姓名</label><input id="stu" name="stu" placeholder="請填寫真實姓名" autocomplete="name"></div>
+      </div>
+
+      <div class="qa">
+        <div class="q-card"><h4>1）請寫出實驗目的</h4><textarea id="q1" required disabled></textarea></div>
+        <div class="q-card"><h4>2）請寫出實驗假設</h4><textarea id="q2" required disabled></textarea></div>
+        <div class="q-card"><h4>3）請寫出操作變因</h4><textarea id="q3" required disabled></textarea></div>
+        <div class="q-card"><h4>4）請寫出應變變因</h4><textarea id="q4" required disabled></textarea></div>
+        <div class="q-card full"><h4>5）根據實驗資料，請寫出實驗結果</h4><textarea id="q5" required disabled></textarea></div>
+        <div class="q-card full"><h4>6）請寫出實驗結論</h4><textarea id="q6" required disabled></textarea></div>
+      </div>
+
+      <div class="submit-bar">
+        <button id="submitBtn" disabled title="請先完成所有欄位">📤 提交答案</button>
+        <div id="submitHints" class="hints">要按下提交，請先完成上方步驟。</div>
+        <span id="submitStatus" class="badge warn">尚未提交</span>
+      </div>
+    </section>
+
+    <section class="stage">
+      <div class="footer-nav">
+        <a href="#" class="btn" id="prevLink" aria-disabled="true">← 上一頁</a>
+        <a class="btn" id="endLink" aria-disabled="true" title="請先完成並提交">課程結束</a>
+      </div>
+      <div class="footnote">提交成功前無法點擊「課程結束」。提交成功後將解鎖並導回 index.html。</div>
+    </section>
+  </main>
+
+<script>
+(function(){
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbyXu-KX1Q1cjcqdzLbuepgGd925zPrQjQdWDe3LZF7GlwPM4caMRfKMvneLv2OEDYhe/exec";
+  const SPREADSHEET_ID = "1YZapyA6IIWE7MGOhTjhtekJGIsdCfJMhnOlmAiwCM44";
+  const SHEET_NAME = "P_transpiration";
+
+  const initialVolume = 10.0;
+  const lossNoLeavesRange = [0.6, 2.0];
+  const lossLeavesRange   = [4.2, 6.8];
+  const animationMs = 5000;
+
+  // ===== DOM（宣告一次就好） =====
+  const startBtn = document.getElementById('startBtn');
+  const resultBtn= document.getElementById('resultBtn');
+  const statusEl = document.getElementById('status');
+  const liqA = document.getElementById('liqA');
+  const liqB = document.getElementById('liqB');
+  const resultsSection = document.getElementById('resultsSection');
+  const qaSection = document.getElementById('qaSection');
+  const endAEl  = document.getElementById('endA');
+  const endBEl  = document.getElementById('endB');
+  const lossAEl = document.getElementById('lossA');
+  const lossBEl = document.getElementById('lossB');
+  const diffEndEl  = document.getElementById('diffEnd');
+  const diffLossEl = document.getElementById('diffLoss');
+  const clsEl = document.getElementById('cls');
+  const seatEl= document.getElementById('seat');
+  const stuEl = document.getElementById('stu');
+  const endLink = document.getElementById('endLink');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitStatus = document.getElementById('submitStatus');
+  const submitHints = document.getElementById('submitHints');
+  const qIds = ['q1','q2','q3','q4','q5','q6'];
+
+  // 建刻度
+  function buildTicks(){
+    document.querySelectorAll('.cylinder .ticks').forEach(t => {
+      t.innerHTML = '';
+      for (let i=0;i<=10;i++){
+        const line = document.createElement('div');
+        line.className = 'tick-line' + (i%5===0 ? ' major' : '');
+        line.style.bottom = (i*10)+'%';
+        t.appendChild(line);
+        if (i%5===0){
+          const lab = document.createElement('div');
+          lab.className = 'tick-label';
+          lab.style.bottom = (i*10)+'%';
+          lab.textContent = i;
+          t.appendChild(lab);
+        }
+      }
+    });
+  }
+  buildTicks();
+
+  // 座號 01～30 自動格式化
+  function normalizeSeat(){
+    let v = seatEl.value.replace(/\D/g,'');
+    if (v.length === 0){ seatEl.value = ''; seatEl.setCustomValidity(''); return; }
+    if (v.length === 1){ v = '0' + v; }
+    v = v.slice(0,2);
+    if (!/^(0[1-9]|[12][0-9]|30)$/.test(v)){ seatEl.setCustomValidity('座號請輸入 01～30'); }
+    else{ seatEl.setCustomValidity(''); }
+    seatEl.value = v;
+  }
+  seatEl.addEventListener('blur', normalizeSeat);
+  seatEl.addEventListener('change', normalizeSeat);
+  seatEl.addEventListener('input', () => { seatEl.value = seatEl.value.replace(/\D/g,'').slice(0,2); });
+
+  // ===== 課程結束按鈕：嚴格鎖定直到提交成功 =====
+  function disableEndLink(){
+    endLink.setAttribute('aria-disabled','true');
+    endLink.classList.remove('unlocked');
+    endLink.removeAttribute('href');
+    endLink.setAttribute('tabindex','-1');
+    endLink.setAttribute('title','請先完成並提交');
+  }
+  function unlockEndLink(){
+    endLink.classList.add('unlocked');
+    endLink.removeAttribute('aria-disabled');
+    endLink.setAttribute('href','index.html');
+    endLink.removeAttribute('tabindex');
+    endLink.setAttribute('title','已提交，可結束課程');
+  }
+  disableEndLink();
+  endLink.addEventListener('click', (e)=>{
+    if (endLink.getAttribute('aria-disabled') === 'true'){ e.preventDefault(); e.stopPropagation(); return false; }
+  });
+
+  // ===== 驗證＆解鎖（只控制提交；endLink 交由提交成功觸發） =====
+  function identityOK(){
+    const clsOK  = (clsEl.value||'').trim().length>0;
+    const seatVal = (seatEl.value||'').trim();
+    const seatOK = /^(0?[1-9]|[12][0-9]|30)$/.test(seatVal);
+    const stuOK  = (stuEl.value||'').trim().length>0;
+    clsEl.classList.toggle('invalid', !clsOK);
+    stuEl.classList.toggle('invalid', !stuOK);
+    seatEl.classList.toggle('invalid', !seatOK);
+    return clsOK && seatOK && stuOK;
+  }
+  function allQsFilled(){ return qIds.every(id => { const el = document.getElementById(id); return el && el.value && el.value.trim().length>0; }); }
+  function unmetReasons(){
+    const reasons = [];
+    if (qaSection.classList.contains('hidden')) reasons.push('請先依序點「開始實驗」→「觀看實驗結果」');
+    if ((clsEl.value||'').trim()==='') reasons.push('尚未填寫 <b>班級</b>');
+    const seatVal = (seatEl.value||'').trim();
+    if (seatVal==='') reasons.push('尚未填寫 <b>座號</b>');
+    else if (!/^(0?[1-9]|[12][0-9]|30)$/.test(seatVal)) reasons.push('<b>座號</b>需為 01～30');
+    if ((stuEl.value||'').trim()==='') reasons.push('尚未填寫 <b>姓名</b>');
+    qIds.forEach((id, idx) => {
+      const el = document.getElementById(id);
+      if (el && (el.value||'').trim()==='') reasons.push(`第 <b>${idx+1}</b> 題尚未作答`);
+    });
+    return reasons;
+  }
+  function refreshUnlocks(){
+    const allowAnswer = identityOK();
+    qIds.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = !allowAnswer; });
+    const ok = allowAnswer && allQsFilled();
+    submitBtn.disabled = !ok;
+    const r = unmetReasons();
+    submitHints.innerHTML = r.length===0 ? '已可提交。請按 <b>提交答案</b> ✅' : '尚無法提交，請先完成：<br>' + r.map(s=>'・'+s).join('<br>');
+  }
+  [clsEl, seatEl, stuEl].forEach(el => el.addEventListener('input', refreshUnlocks));
+  qIds.forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', refreshUnlocks); });
+  refreshUnlocks();
+
+  // ===== 實驗流程 =====
+  let hasRun = false;
+  let lossA = null, lossB = null, endA = null, endB = null;
+  startBtn.addEventListener('click', () => {
+    if (hasRun) return; hasRun = true;
+    // 保證有葉子 > 無葉子
+    lossA = Math.min(Math.round((Math.random()*(lossNoLeavesRange[1]-lossNoLeavesRange[0])+lossNoLeavesRange[0])*10)/10, 2.0);
+    lossB = Math.round((Math.max(lossA+0.8, lossLeavesRange[0]) + Math.random()* (lossLeavesRange[1]-Math.max(lossA+0.8, lossLeavesRange[0])))*10)/10;
+    endA = Math.max(0, Math.round((initialVolume - lossA)*10)/10);
+    endB = Math.max(0, Math.round((initialVolume - lossB)*10)/10);
+    const targetA = (endA/initialVolume)*90, targetB = (endB/initialVolume)*90;
+    statusEl.textContent = '實驗進行中：液面下降中…';
+    startBtn.disabled = true; resultBtn.disabled = true;
+    liqA.style.height = '90%'; liqB.style.height = '90%';
+    requestAnimationFrame(()=>{ liqA.style.height = Math.max(4,Math.min(94,targetA))+'%'; liqB.style.height = Math.max(4,Math.min(94,targetB))+'%'; });
+    setTimeout(()=>{ statusEl.textContent = '實驗結束 ✅ 請點擊「觀看實驗結果」。'; resultBtn.disabled = false; }, animationMs);
+  });
+
+  let chart = null;
+  resultBtn.addEventListener('click', () => {
+    if (resultBtn.disabled) return;
+    endAEl.textContent  = endA.toFixed(1);
+    endBEl.textContent  = endB.toFixed(1);
+    lossAEl.textContent = lossA.toFixed(1);
+    lossBEl.textContent = lossB.toFixed(1);
+    diffEndEl.textContent  = (endB - endA).toFixed(1);
+    diffLossEl.textContent = (lossB - lossA).toFixed(1);
+    resultsSection.classList.remove('hidden');
+    qaSection.classList.remove('hidden');
+    const ctx = document.getElementById('barChart');
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type:'bar',
+      data:{ labels:['無葉子','有葉子'], datasets:[{ label:'散失水量（mL）', data:[lossA,lossB] }] },
+      options:{ animation:{ duration:800 }, responsive:true, plugins:{ legend:{ display:true }, tooltip:{ enabled:true } },
+                scales:{ y:{ beginAtZero:true, title:{ display:true, text:'mL' } } } }
+    });
+    refreshUnlocks();
+  });
+
+  // ===== 送出（成功後解鎖「課程結束」→ index.html） =====
+  async function submitToSheet(){
+    if (submitBtn.disabled) return;
+    submitBtn.disabled = true; submitBtn.textContent = '上傳中…';
+    submitStatus.className = 'badge warn'; submitStatus.textContent = '上傳中';
+    const now = new Date();
+    let seatVal = (seatEl.value||'').trim(); if (/^[1-9]$/.test(seatVal)) seatVal = seatVal.padStart(2,'0');
+    const payload = {
+      spreadsheetId: SPREADSHEET_ID, sheetName: SHEET_NAME,
+      record: {
+        timestamp: now.toISOString(), localTime: now.toLocaleString(),
+        className: (clsEl.value||'').trim(), seatNo: seatVal, studentName: (stuEl.value||'').trim(),
+        q1: q1.value.trim(), q2: q2.value.trim(), q3: q3.value.trim(), q4: q4.value.trim(), q5: q5.value.trim(), q6: q6.value.trim(),
+        endA, endB, lossA, lossB, diffLoss: (lossB - lossA),
+        userAgent: navigator.userAgent, page: location.href, referrer: document.referrer || null
+      }
+    };
+    try{
+      const res = await fetch(GAS_URL, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+      if (!res || (res.type === 'opaque') || res.ok){
+        submitStatus.className = 'badge ok'; submitStatus.textContent = '提交成功';
+        submitBtn.textContent = '✅ 已提交';
+        unlockEndLink();
+      }else{
+        const msg = await res.text().catch(()=>res.statusText);
+        throw new Error('HTTP '+res.status+' '+msg);
+      }
+    }catch(err){
+      console.error(err);
+      submitStatus.className = 'badge err'; submitStatus.textContent = '提交失敗，請稍後再試';
+      submitBtn.textContent = '重新提交'; submitBtn.disabled = false; return;
+    }
+  }
+  submitBtn.addEventListener('click', submitToSheet);
+})();
+</script>
+
+<!-- Apps Script 的欄位順序（請在 Code.gs 用作首列標題）：
+const HEADERS = ['timestamp','localTime','className','seatNo','studentName','q1','q2','q3','q4','q5','q6','endA','endB','lossA','lossB','diffLoss','userAgent','page','referrer'];
+-->
+</body>
+</html>

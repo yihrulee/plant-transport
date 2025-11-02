@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>植物的運輸探索之旅</title>
+    <style>
+        /* 設置全螢幕背景和基本文字樣式 */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* 視埠高度 */
+            display: flex; /* 啟用 Flexbox */
+            flex-direction: column; /* 垂直排列 */
+            justify-content: center; /* 垂直居中內容 */
+            align-items: center; /* 水平居中內容 */
+            font-family: '微軟正黑體', 'Microsoft JhengHei', sans-serif;
+            background-color: #f0f8ff; /* 淺藍色背景 */
+            color: #333;
+            text-align: center; /* 確保內部文字置中 */
+        }
+
+        /* 標題區塊樣式 */
+        .header-content {
+            margin-bottom: 40px;
+        }
+
+        /* 大標題樣式 */
+        h1 {
+            font-size: 3.5em; /* 較大的字體 */
+            color: #2e8b57; /* 墨綠色 */
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 副標題樣式 */
+        p {
+            font-size: 1.5em;
+            color: #555;
+            margin: 0;
+        }
+
+        /* 圖片按鈕樣式 (使用 <a> 標籤模擬按鈕) */
+        .image-button {
+            display: inline-block; /* 允許應用寬度和過渡效果 */
+            border: none; /* 無邊框 */
+            background: none; /* 無背景 */
+            cursor: pointer; /* 鼠標變為手形 */
+            padding: 0;
+            transition: transform 0.2s, box-shadow 0.2s; /* 添加過渡效果 */
+            outline: none; /* 移除預設焦點外框 */
+            border-radius: 10px; /* 輕微圓角 */
+            overflow: hidden; /* 確保陰影適用於整個按鈕區域 */
+        }
+
+        /* 圖片樣式 */
+        .image-button img {
+            width: 300px; /* 圖片寬度，可調整 */
+            height: auto;
+            display: block;
+            border-radius: 10px; /* 輕微圓角 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 預設陰影 */
+        }
+
+        /* 滑鼠懸停和焦點時的效果 */
+        .image-button:hover, .image-button:focus {
+            transform: scale(1.05); /* 放大效果 */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 強化陰影 */
+        }
+
+        /* 點擊時的效果 */
+        .image-button:focus:active {
+            transform: scale(0.98); /* 點擊時輕微縮小 */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header-content">
+        <h1>🌱 植物的運輸探索之旅 💧</h1>
+        <p>點擊圖片，開始你的科學冒險！</p>
+    </div>
+
+    <a href="1.html" class="image-button" role="button" tabindex="0">
+        <img src="0.png" alt="開始探索按鈕" id="start-button-img">
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageButton = document.querySelector('.image-button');
+            const targetUrl = '1.html';
+
+            // 處理鍵盤事件，用於 Space 鍵觸發點擊
+            // 由於 <a> 標籤默認支援 Enter 鍵導航，此處主要處理 Space 鍵。
+            imageButton.addEventListener('keydown', (event) => {
+                // 檢查是否為 Space 鍵 (event.code === 'Space')
+                if (event.code === 'Space') {
+                    // 阻止 Space 鍵的默認行為（如滾動頁面）
+                    event.preventDefault();
+                    // 導航到目標 URL
+                    window.location.href = targetUrl;
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

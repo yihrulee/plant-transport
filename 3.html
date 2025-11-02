@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>植物的運輸_學習頁面_樹皮與年輪</title>
+<style>
+  :root{
+    --ink:#1f2937;         /* 文字 */
+    --bg:#f8fafc;          /* 頁面底色 */
+    --card:#ffffff;        /* 卡片 */
+    --muted:#64748b;       /* 次要文字 */
+    --ok-bg:#ecfdf5;       /* 正確底 */
+    --ok-br:#10b981;       /* 正確框 */
+    --ng-bg:#fff1f2;       /* 錯誤底 */
+    --ng-br:#ef4444;       /* 錯誤框 */
+    --brand:#2563eb;       /* 強調色 */
+  }
+  html,body{height:100%}
+  body{
+    margin:0; font-family: "Microsoft JhengHei", system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans TC", sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.65;
+  }
+  .container{max-width:1100px; margin:0 auto; padding:24px 16px 120px;}
+  /* 置中標題，拿掉小字（副標與徽章） */
+  h1{font-size:clamp(22px,3vw,30px); margin:8px 0 4px; text-align:center}
+  .subtitle,.badge{display:none !important}
+  .card{
+    background:var(--card); border:1px solid #e5e7eb; border-radius:16px; padding:16px;
+    box-shadow: 0 1px 0 rgba(0,0,0,.03);
+  }
+  .lesson{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; align-items:center}
+  .lesson + .lesson{margin-top:14px}
+  .lesson img{width:100%; height:auto; border-radius:12px; border:1px solid #e5e7eb; background:#fff}
+  /* 第二段：文字在上、圖片滿幅在下（原本滿幅） */
+  .lesson.hero{display:block;}
+  .lesson.hero .banner-wrap{
+    /* 原本：margin:12px -16px -16px; 為了不讓圖片滿幅，改為下列設定 */
+    margin:12px 0 0; 
+    border-radius:0 0 16px 16px; 
+    overflow:hidden;
+    text-align:center; /* 置中容器內的圖片 */
+  }
+  .lesson.hero img{
+    display:block; width:100%; height:auto; border:0; border-radius:0; background:#fff;
+  }
+  /* 只針對 3_2.png 這張圖做 3/4 寬度與置中（更高優先度選擇器覆蓋上面設定） */
+  .lesson.hero .banner-wrap img{
+    width:75%;
+    max-width:75%;
+    margin:0 auto;
+    border-radius:12px;
+    border:1px solid #e5e7eb;
+  }
+  .section-title{font-weight:700; font-size:18px; margin:0 0 6px}
+  .kw1{color:#0ea5e9; font-weight:700}   /* 樹皮/年輪等 */
+  .kw2{color:#f97316; font-weight:700}   /* 韌皮部 */
+  .kw3{color:#22c55e; font-weight:700}   /* 形成層 */
+  .kw4{color:#8b5cf6; font-weight:700}   /* 木質部 */
+  .kw5{color:#ef4444; font-weight:700}   /* 春夏/秋冬 */
+  .kw6{color:#a16207; font-weight:700}   /* 養分/根部 */
+  /* 題目 */
+  .quiz{margin-top:22px}
+  .qcard{background:var(--card); border:1px solid #e5e7eb; border-radius:16px; padding:16px; margin-top:12px}
+  .q-title{font-weight:700; margin:0 0 8px}
+  .q-actions{display:flex; gap:8px; margin-top:10px; flex-wrap:wrap}
+  button{
+    appearance:none; border:1px solid #cbd5e1; background:#fff; border-radius:999px;
+    padding:8px 14px; font-weight:700; cursor:pointer;
+  }
+  button.primary{background:var(--brand); color:#fff; border-color:transparent}
+  button[disabled]{opacity:.5; cursor:not-allowed}
+  .feedback{display:none; margin-top:10px; padding:10px 12px; border-radius:12px; border:2px solid transparent}
+  .feedback.correct{display:block; background:var(--ok-bg); border-color:var(--ok-br)}
+  .feedback.incorrect{display:block; background:var(--ng-bg); border-color:var(--ng-br)}
+  .badge{display:inline-block; font-size:12px; padding:2px 8px; border:1px solid #e5e7eb; border-radius:999px; color:var(--muted); margin-left:8px}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .pair-grid{display:grid; grid-template-columns:140px 1fr 1fr; gap:8px; align-items:center}
+  select, input[type="text"]{width:100%; padding:8px 10px; border:1px solid #cbd5e1; border-radius:10px; font-size:15px}
+  label{display:flex; align-items:flex-start; gap:8px; cursor:pointer}
+  .opt{display:flex; gap:10px; flex-direction:column}
+  /* 導覽 */
+  .footer{
+    position:fixed; inset:auto 0 0 0; background:rgba(255,255,255,.9); backdrop-filter: saturate(1.2) blur(6px);
+    border-top:1px solid #e5e7eb;
+  }
+  .footer-inner{max-width:1100px; margin:0 auto; padding:12px 16px; display:flex; justify-content:space-between; align-items:center}
+  .nav a{
+    padding:10px 14px; border-radius:999px; border:1px solid #cbd5e1; background:#fff; text-decoration:none; color:var(--ink); font-weight:700;
+  }
+  .nav a.next{background:var(--brand); color:#fff; border-color:transparent}
+  .nav a.disabled{pointer-events:none; opacity:.45; background:#e5e7eb; color:#6b7280; border-color:transparent}
+  @media (max-width:860px){
+    .lesson{grid-template-columns:1fr}
+    /* 小螢幕下仍維持 3/4 的相對寬度 */
+    .lesson.hero .banner-wrap img{ width:75%; max-width:75%; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>植物的運輸_學習頁面_樹皮與年輪 <span class="badge">自然｜國中</span></h1>
+    <div class="subtitle">閱讀重點＋多元題型練習（答對全部題目後可前往下一頁）</div>
+
+    <!-- 第一段 -->
+    <div class="card lesson">
+      <div>
+        <div class="section-title">樹皮、形成層與木材</div>
+        <p>
+          <span class="kw1">樹皮</span>是樹幹的保護層，包含<span class="kw2">韌皮部</span>及其外圍構造。當樹木逐年成長，
+          <span class="kw3">形成層</span>內側的<span class="kw4">木質部</span>會逐漸堆積形成木材。
+        </p>
+      </div>
+      <img src="./3_1.png" alt="樹皮與形成層示意圖">
+    </div>
+
+    <!-- 第二段：文字在上，圖在下（寬度 3/4，置中） -->
+    <div class="card lesson hero">
+      <div>
+        <div class="section-title">四季與年輪</div>
+        <p>
+          <span class="kw5">春、夏</span>氣候溫暖、雨量豐富，細胞生長較快，因此此時的<span class="kw4">木質部</span>細胞較大、木材顏色較淺；
+          到了<span class="kw5">秋、冬</span>氣候寒冷乾燥，細胞生長較慢，木質部細胞較小、木材顏色較深。
+          隨著四季更迭，在樹幹、樹枝的橫切面會形成深淺對比明顯的環紋，稱為<span class="kw1">年輪</span>。
+        </p>
+      </div>
+      <div class="banner-wrap">
+        <img src="./3_2.png" alt="年輪深淺環紋示意圖">
+      </div>
+    </div>
+
+    <!-- 第三段 -->
+    <div class="card lesson">
+      <div>
+        <div class="section-title">溪頭柳杉與神木現象</div>
+        <p>
+          南投縣溪頭有些柳杉的<span class="kw1">樹皮</span>被松鼠啃食，造成柳杉樹枝死亡。因為<span class="kw1">樹皮</span>包含<span class="kw2">韌皮部</span>，
+          一旦被啃食一圈使<span class="kw2">韌皮部</span>破壞，光合作用製造的<span class="kw6">養分</span>無法運送到<span class="kw6">根部</span>，
+          根部因缺乏養分而壞死，進而失去吸水功能，最後造成枝葉枯黃死亡。另一方面，神木中心多為不具運輸功能的老化<span class="kw4">木質部</span>，
+          因此即使樹幹中空仍可存活，野外也常見中空卻仍生長的樹木。
+        </p>
+      </div>
+      <img src="./3_3.png" alt="溪頭柳杉與神木中空現象">
+    </div>
+
+    <!-- 互動練習 -->
+    <div class="quiz">
+      <!-- Q1 單選 -->
+      <div class="qcard" id="q1">
+        <div class="q-title">Q1｜單選題：關於「樹皮」的敘述，下列何者正確？</div>
+        <div class="opt">
+          <label><input type="radio" name="q1" value="A"> 樹皮包含韌皮部及其外圍構造，並具有保護作用。</label>
+          <label><input type="radio" name="q1" value="B"> 樹皮僅由木質部構成。</label>
+          <label><input type="radio" name="q1" value="C"> 樹皮只負責運輸水分，不具保護功能。</label>
+          <label><input type="radio" name="q1" value="D"> 樹皮與運輸與保護皆無關。</label>
+        </div>
+        <div class="q-actions">
+          <button class="primary" id="q1-check" disabled>檢查答案</button>
+          <button id="q1-reset" style="display:none">重做本題</button>
+        </div>
+        <div class="feedback" id="q1-fb" aria-live="polite"></div>
+      </div>
+
+      <!-- Q2 複選 -->
+      <div class="qcard" id="q2">
+        <div class="q-title">Q2｜複選題：勾選所有正確的敘述（可複選）。</div>
+        <div class="grid-2">
+          <label><input type="checkbox" name="q2" value="A"> 春、夏期間木質部細胞較大。</label>
+          <label><input type="checkbox" name="q2" value="B"> 春、夏形成的木材顏色較深。</label>
+          <label><input type="checkbox" name="q2" value="C"> 秋、冬期間木質部細胞較小。</label>
+          <label><input type="checkbox" name="q2" value="D"> 秋、冬形成的木材顏色較淺。</label>
+          <label><input type="checkbox" name="q2" value="E"> 年輪是由深淺交替的環紋所形成。</label>
+        </div>
+        <div class="q-actions">
+          <button class="primary" id="q2-check" disabled>檢查答案</button>
+          <button id="q2-reset" style="display:none">重做本題</button>
+        </div>
+        <div class="feedback" id="q2-fb" aria-live="polite"></div>
+      </div>
+
+      <!-- Q3 填充 -->
+      <div class="qcard" id="q3">
+        <div class="q-title">Q3｜填充題：溪頭柳杉被松鼠環狀啃食後，哪個構造受損會導致養分無法送達根部？請填入名詞。</div>
+        <input type="text" id="q3-input" placeholder="請輸入名詞，例如：＿＿＿＿部" autocomplete="off" />
+        <div class="q-actions">
+          <button class="primary" id="q3-check" disabled>檢查答案</button>
+          <button id="q3-reset" style="display:none">重做本題</button>
+        </div>
+        <div class="feedback" id="q3-fb" aria-live="polite"></div>
+      </div>
+
+      <!-- Q4 下拉配對 -->
+      <div class="qcard" id="q4">
+        <div class="q-title">Q4｜配對題（下拉選擇）：依四季配對木質部細胞大小與木材顏色。</div>
+        <div class="pair-grid" role="group" aria-label="季節與性狀配對">
+          <div></div><div><small>細胞大小</small></div><div><small>木材顏色</small></div>
+
+          <div><strong>春／夏</strong></div>
+          <div>
+            <select id="q4-spring-size">
+              <option value="">— 請選擇 —</option>
+              <option value="大">大</option>
+              <option value="小">小</option>
+            </select>
+          </div>
+          <div>
+            <select id="q4-spring-color">
+              <option value="">— 請選擇 —</option>
+              <option value="淺">淺</option>
+              <option value="深">深</option>
+            </select>
+          </div>
+
+          <div><strong>秋／冬</strong></div>
+          <div>
+            <select id="q4-fall-size">
+              <option value="">— 請選擇 —</option>
+              <option value="大">大</option>
+              <option value="小">小</option>
+            </select>
+          </div>
+          <div>
+            <select id="q4-fall-color">
+              <option value="">— 請選擇 —</option>
+              <option value="淺">淺</option>
+              <option value="深">深</option>
+            </select>
+          </div>
+        </div>
+        <div class="q-actions">
+          <button class="primary" id="q4-check" disabled>檢查答案</button>
+          <button id="q4-reset" style="display:none">重做本題</button>
+        </div>
+        <div class="feedback" id="q4-fb" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 頁尾導覽 -->
+  <div class="footer">
+    <div class="footer-inner">
+      <div class="nav">
+        <a href="./2.html" class="prev">← 上一頁</a>
+      </div>
+      <div class="nav">
+        <a id="next-link" class="next disabled" href="./4.html" aria-disabled="true">下一頁 →</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const state = { q1:false, q2:false, q3:false, q4:false };
+
+  const nextLink = document.getElementById('next-link');
+  function updateNext(){
+    const allOK = Object.values(state).every(v=>v===true);
+    if(allOK){
+      nextLink.classList.remove('disabled');
+      nextLink.removeAttribute('aria-disabled');
+    }
+  }
+
+  /* 工具 */
+  function disableIn(container, disabled=true){
+    container.querySelectorAll('input, select, button').forEach(el=>{
+      if(el.classList.contains('primary')) return; // 主檢查按鈕由外層控制
+      if(el.id.endsWith('-reset')) return;
+      el.disabled = disabled;
+    });
+  }
+  function readyToggle(btn, isReady){ btn.disabled = !isReady; }
+  function showFB(el, ok, msg){
+    el.className = 'feedback '+(ok?'correct':'incorrect');
+    el.textContent = msg;
+  }
+  function hideFB(el){ el.className='feedback'; el.textContent=''; }
+
+  /* Q1 單選 */
+  const q1 = document.getElementById('q1');
+  const q1Check = document.getElementById('q1-check');
+  const q1Reset = document.getElementById('q1-reset');
+  const q1Fb = document.getElementById('q1-fb');
+  q1.addEventListener('change', e=>{
+    if(e.target.name==='q1'){
+      readyToggle(q1Check, q1.querySelector('input[name="q1"]:checked')!==null);
+    }
+  });
+  q1Check.addEventListener('click', ()=>{
+    const sel = q1.querySelector('input[name="q1"]:checked');
+    const ok = !!sel && sel.value==='A';
+    showFB(q1Fb, ok,
+      ok ? '✅ 答對了！樹皮包含韌皮部與外圍構造，具保護作用。'
+         : '❌ 再想想：樹皮並非木質部；它包含韌皮部與外圍構造，主要提供保護。');
+    q1Check.disabled = true; // 鎖定按鈕
+    disableIn(q1, true);
+    if(!ok){
+      q1Reset.style.display='inline-block';
+    }else{
+      state.q1 = true; updateNext();
+    }
+  });
+  q1Reset.addEventListener('click', ()=>{
+    q1.querySelectorAll('input[name="q1"]').forEach(i=>{ i.checked=false; i.disabled=false; });
+    q1Reset.style.display='none';
+    hideFB(q1Fb);
+    readyToggle(q1Check, false);
+  });
+
+  /* Q2 複選 */
+  const q2 = document.getElementById('q2');
+  const q2Check = document.getElementById('q2-check');
+  const q2Reset = document.getElementById('q2-reset');
+  const q2Fb = document.getElementById('q2-fb');
+  const q2Correct = new Set(['A','C','E']);
+  q2.addEventListener('change', e=>{
+    if(e.target.name==='q2'){
+      const any = q2.querySelectorAll('input[name="q2"]:checked').length>0;
+      readyToggle(q2Check, any);
+    }
+  });
+  q2Check.addEventListener('click', ()=>{
+    const checked = Array.from(q2.querySelectorAll('input[name="q2"]:checked')).map(i=>i.value);
+    const set = new Set(checked);
+    let ok = checked.length===q2Correct.size;
+    if(ok){
+      for(const v of q2Correct){ if(!set.has(v)) { ok=false; break; } }
+    }
+    showFB(q2Fb, ok,
+      ok ? '✅ 正確：春夏細胞大、顏色淺；秋冬細胞小、顏色深；年輪為深淺交替。'
+         : '❌ 小提醒：春夏→細胞較大、顏色較淺；秋冬→細胞較小、顏色較深；年輪是深淺交替的環紋。');
+    q2Check.disabled = true;
+    disableIn(q2, true);
+    if(!ok){
+      q2Reset.style.display='inline-block';
+    }else{
+      state.q2 = true; updateNext();
+    }
+  });
+  q2Reset.addEventListener('click', ()=>{
+    q2.querySelectorAll('input[name="q2"]').forEach(i=>{ i.checked=false; i.disabled=false; });
+    q2Reset.style.display='none';
+    hideFB(q2Fb);
+    readyToggle(q2Check, false);
+  });
+
+  /* Q3 填充 */
+  const q3 = document.getElementById('q3');
+  const q3Input = document.getElementById('q3-input');
+  const q3Check = document.getElementById('q3-check');
+  const q3Reset = document.getElementById('q3-reset');
+  const q3Fb = document.getElementById('q3-fb');
+  q3Input.addEventListener('input', ()=>{
+    const v = q3Input.value.trim();
+    readyToggle(q3Check, v.length>0);
+  });
+  function norm(s){ return s.replace(/\s+/g,'').toLowerCase(); }
+  q3Check.addEventListener('click', ()=>{
+    const raw = q3Input.value.trim();
+    const ans = norm(raw);
+    const ok = (raw==='韌皮部') || (ans==='韌皮') || (ans==='phloem');
+    showFB(q3Fb, ok,
+      ok ? '✅ 答對了！被環狀啃食使韌皮部受損，養分無法下運至根部。'
+         : '❌ 提示：負責向下運輸光合作用產物的部位是「＿＿皮部」。');
+    q3Check.disabled = true;
+    q3Input.disabled = true;
+    if(!ok){
+      q3Reset.style.display='inline-block';
+    }else{
+      state.q3 = true; updateNext();
+    }
+  });
+  q3Reset.addEventListener('click', ()=>{
+    q3Input.disabled = false;
+    q3Input.value = '';
+    hideFB(q3Fb);
+    readyToggle(q3Check, false);
+    q3Reset.style.display='none';
+  });
+
+  /* Q4 下拉配對 */
+  const q4 = document.getElementById('q4');
+  const q4Check = document.getElementById('q4-check');
+  const q4Reset = document.getElementById('q4-reset');
+  const q4Fb = document.getElementById('q4-fb');
+  const qs = {
+    ss: document.getElementById('q4-spring-size'),
+    sc: document.getElementById('q4-spring-color'),
+    fs: document.getElementById('q4-fall-size'),
+    fc: document.getElementById('q4-fall-color'),
+  };
+  function q4Ready(){
+    return qs.ss.value && qs.sc.value && qs.fs.value && qs.fc.value;
+  }
+  q4.addEventListener('change', ()=> readyToggle(q4Check, q4Ready()));
+  q4Check.addEventListener('click', ()=>{
+    const ok = (qs.ss.value==='大' && qs.sc.value==='淺' && qs.fs.value==='小' && qs.fc.value==='深');
+    showFB(q4Fb, ok,
+      ok ? '✅ 完美配對：春夏→細胞大／顏色淺；秋冬→細胞小／顏色深。'
+         : '❌ 再確認：春夏應為「大、淺」，秋冬應為「小、深」。');
+    q4Check.disabled = true;
+    disableIn(q4, true);
+    if(!ok){
+      q4Reset.style.display='inline-block';
+    }else{
+      state.q4 = true; updateNext();
+    }
+  });
+  q4Reset.addEventListener('click', ()=>{
+    Object.values(qs).forEach(s=>{ s.disabled=false; s.value=''; });
+    hideFB(q4Fb);
+    readyToggle(q4Check, false);
+    q4Reset.style.display='none';
+  });
+
+})();
+</script>
+</body>
+</html>

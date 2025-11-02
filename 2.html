@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>植物的運輸_學習頁面_莖內維管束的排列</title>
+  <style>
+    :root{
+      --c1:#0ea5e9; /* 關鍵字1：環狀排列/散生排列 */
+      --c2:#16a34a; /* 關鍵字2：韌皮部 */
+      --c3:#7c3aed; /* 關鍵字3：木質部 */
+      --c4:#ea580c; /* 關鍵字4：形成層/細胞分裂/加粗 */
+      --ok-bg:#dcfce7; --ok-border:#16a34a;
+      --bad-bg:#fee2e2; --bad-border:#dc2626;
+      --muted:#64748b; --ink:#0f172a; --brand:#14532d;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:system-ui,-apple-system,"Segoe UI","Microsoft JhengHei",Roboto,Arial;
+      color:var(--ink); background:#f8fafc; line-height:1.6;
+    }
+    header{
+      background:#e0f2fe; border-bottom:3px solid #bae6fd;
+      padding:24px 16px; text-align:center;
+    }
+    header h1{margin:0 0 6px; font-size:clamp(22px,2.8vw,30px)}
+    header p{margin:0; color:#0c4a6e}
+    main{max-width:1100px; margin:auto; padding:22px 16px 120px}
+
+    .grid{
+      display:grid; gap:16px; align-items:center;
+      grid-template-columns:1.2fr 1fr;
+    }
+    .grid.alt{grid-template-columns:1fr 1.2fr}
+    @media (max-width:880px){
+      .grid,.grid.alt{grid-template-columns:1fr}
+    }
+
+    .card{
+      background:#ffffff; border:1px solid #e2e8f0; border-radius:14px; padding:18px;
+      box-shadow:0 1px 0 rgba(2,6,23,.04);
+    }
+    .card h2{margin:.2rem 0 0.6rem; font-size:1.25rem}
+    .card p{margin:.5rem 0}
+    .img-wrap{border-radius:12px; overflow:hidden; border:1px solid #e2e8f0; background:#fff}
+    .img-wrap img{width:100%; height:auto; display:block}
+
+    .k1{color:var(--c1); font-weight:700}
+    .k2{color:var(--c2); font-weight:700}
+    .k3{color:var(--c3); font-weight:700}
+    .k4{color:var(--c4); font-weight:700}
+
+    /* 問題樣式 */
+    .question{border:2px solid #e2e8f0; border-radius:14px; background:#ffffff; padding:16px; margin-top:14px}
+    .question h3{margin:.2rem 0 .6rem; font-size:1.05rem}
+    .question.correct{background:var(--ok-bg); border-color:var(--ok-border)}
+    .question.incorrect{background:var(--bad-bg); border-color:var(--bad-border)}
+    .controls{margin-top:10px; display:flex; gap:10px; flex-wrap:wrap}
+    .btn{
+      appearance:none; border:2px solid #0ea5e9; background:#0ea5e9; color:#fff;
+      padding:.5rem .9rem; border-radius:10px; font-weight:700; cursor:pointer;
+    }
+    .btn.ghost{ background:#ffffff; color:#0ea5e9; border-color:#0ea5e9; }
+    .btn[disabled]{opacity:.45; cursor:not-allowed}
+    .muted{color:var(--muted); font-size:.92rem}
+
+    .feedback{display:none; margin-top:8px; padding:10px 12px; border-radius:10px; background:rgba(0,0,0,.04)}
+    .question.correct .feedback,.question.incorrect .feedback{display:block}
+
+    /* Q3 chips */
+    .chip{display:inline-flex; align-items:center; gap:.4rem; padding:.35rem .6rem;
+      border-radius:999px; border:1px solid #cbd5e1; background:#f8fafc; cursor:pointer; user-select:none}
+    .chip[data-fixed="1"]{opacity:.6; pointer-events:none}
+    .buckets{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    @media (max-width:720px){ .buckets{grid-template-columns:1fr} }
+    .bucket{
+      min-height:64px; padding:10px; border:2px dashed #cbd5e1; border-radius:12px; background:#f1f5f9
+    }
+    .bucket h4{margin:0 0 6px; font-size:.98rem}
+    .pool{padding:10px; border:1px dashed #cbd5e1; border-radius:12px; background:#fff; margin-top:6px}
+    .bucket .chip,.pool .chip{margin:6px 6px 0 0}
+    /* 讓空的投放區也有面積可投放 */
+    .drop{ min-height:60px; padding:8px; display:block; }
+
+    /* 導覽 */
+    footer{
+      position:fixed; inset-inline:0; bottom:0; background:#fffffff2; backdrop-filter:saturate(1.2) blur(4px);
+      border-top:1px solid #e2e8f0; padding:12px 16px;
+    }
+    .nav{
+      max-width:1100px; margin:auto; display:flex; gap:12px; justify-content:space-between; align-items:center;
+    }
+    .nav a{
+      text-decoration:none; font-weight:800; border-radius:999px; padding:.6rem 1rem; border:2px solid #0f766e;
+      background:#0f766e; color:#fff;
+    }
+    .nav a.disabled{opacity:.45; pointer-events:none; filter:grayscale(.35)}
+    .hint{color:#0f766e; font-size:.9rem}
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>植物的運輸｜學習頁面：<span class="k1">莖內維管束的排列</span></h1>
+    <p>讀懂 <span class="k2">韌皮部</span>、<span class="k3">木質部</span> 與 <span class="k4">形成層</span> 的協作</p>
+  </header>
+
+  <main>
+    <!-- 內容段落 1 -->
+    <section class="card grid" aria-labelledby="sec1">
+      <div>
+        <h2 id="sec1">維管束的排列（環狀）</h2>
+        <p>
+          不同的植物，莖內維管束的排列方式也不同，例如
+          <span class="k1">向日葵</span>與<span class="k1">榕樹</span>等植物，其莖內維管束呈
+          <span class="k1">環狀排列</span>，且<span class="k2">韌皮部</span>與<span class="k3">木質部</span>之間還有
+          <span class="k4">形成層</span>。
+        </p>
+      </div>
+      <figure class="img-wrap" aria-label="環狀排列示意圖">
+        <img src="2_1.png" alt="向日葵/榕樹莖的環狀排列剖面示意" />
+      </figure>
+    </section>
+
+    <!-- 內容段落 2（左右相反） -->
+    <section class="card grid alt" aria-labelledby="sec2" style="margin-top:14px">
+      <figure class="img-wrap" aria-label="散生排列示意圖">
+        <img src="2_2.png" alt="玉米/水稻莖的散生排列剖面示意" />
+      </figure>
+      <div>
+        <h2 id="sec2">維管束的排列（散生）與形成層作用</h2>
+        <p>
+          <span class="k4">形成層</span>可以進行<span class="k4">細胞分裂</span>，
+          向外增生新的<span class="k2">韌皮部</span>細胞，向內增生新的<span class="k3">木質部</span>細胞，使莖不斷<span class="k4">加粗</span>生長。
+          <span class="k1">玉米</span>與<span class="k1">水稻</span>等植物，其莖內維管束呈<span class="k1">散生排列</span>，通常不具<span class="k4">形成層</span>。
+        </p>
+      </div>
+    </section>
+
+    <!-- 互動練習題 -->
+    <section aria-labelledby="quiz" style="margin-top:18px">
+      <h2 id="quiz" class="sr-only">互動練習</h2>
+
+      <!-- Q1 單選 -->
+      <div class="question" id="q1">
+        <h3>Q1｜下列何者屬於「<span class="k1">環狀排列</span>」的例子？（單選）</h3>
+        <label><input type="radio" name="q1" value="A"> 向日葵、榕樹</label><br>
+        <label><input type="radio" name="q1" value="B"> 玉米、水稻</label><br>
+        <label><input type="radio" name="q1" value="C"> 以上皆非</label>
+        <div class="controls">
+          <button class="btn" data-check="q1" disabled>檢查答案</button>
+          <span class="muted">先作答才可檢查</span>
+        </div>
+        <div class="feedback" data-fb="q1"></div>
+      </div>
+
+      <!-- Q2 複選 -->
+      <div class="question" id="q2">
+        <h3>Q2｜關於<span class="k4">形成層</span>的敘述，哪些正確？（可複選，建議至少選 3 項）</h3>
+        <label><input type="checkbox" name="q2" value="a"> 可進行<span class="k4">細胞分裂</span></label><br>
+        <label><input type="checkbox" name="q2" value="b"> 向外增生新的<span class="k2">韌皮部</span>細胞</label><br>
+        <label><input type="checkbox" name="q2" value="c"> 向內增生新的<span class="k3">木質部</span>細胞</label><br>
+        <label><input type="checkbox" name="q2" value="d"> 散生排列的莖通常具有明顯形成層</label><br>
+        <label><input type="checkbox" name="q2" value="e"> 使莖不斷<span class="k4">加粗</span>生長</label>
+        <div class="controls">
+          <button class="btn" data-check="q2" disabled>檢查答案</button>
+          <span class="muted">至少勾選 1 項才可檢查</span>
+        </div>
+        <div class="feedback" data-fb="q2"></div>
+      </div>
+
+      <!-- Q3 點選分欄分類（含拖放修正） -->
+      <div class="question" id="q3">
+        <h3>Q3｜將植物拖放/點選到正確分類（行動裝置可點擊切換欄位）</h3>
+        <p class="muted">把 4 個植物全部放入下方兩個欄位之一，才能檢查答案。</p>
+        <div class="buckets">
+          <div class="bucket" data-bucket="have">
+            <h4>具<span class="k4">形成層</span>（常見於<span class="k1">環狀排列</span>）</h4>
+            <div class="drop" aria-label="具形成層放置區"></div>
+          </div>
+          <div class="bucket" data-bucket="none">
+            <h4>通常不具<span class="k4">形成層</span>（常見於<span class="k1">散生排列</span>）</h4>
+            <div class="drop" aria-label="不具形成層放置區"></div>
+          </div>
+        </div>
+        <div class="pool" id="pool" aria-label="待分類">
+          <span class="chip" draggable="true" data-item="向日葵">向日葵</span>
+          <span class="chip" draggable="true" data-item="榕樹">榕樹</span>
+          <span class="chip" draggable="true" data-item="玉米">玉米</span>
+          <span class="chip" draggable="true" data-item="水稻">水稻</span>
+        </div>
+        <div class="controls">
+          <button class="btn" data-check="q3" disabled>檢查答案</button>
+          <span class="muted">需全部分類完成才可檢查</span>
+        </div>
+        <div class="feedback" data-fb="q3"></div>
+      </div>
+
+      <!-- Q4 下拉選配對 -->
+      <div class="question" id="q4">
+        <h3>Q4｜形成層增生方向配對（下拉選擇）</h3>
+        <div>
+          向外增生新的：
+          <label class="sr-only" for="sel-out">向外增生</label>
+          <select id="sel-out">
+            <option value="">— 請選擇 —</option>
+            <option value="韌皮部">韌皮部</option>
+            <option value="木質部">木質部</option>
+          </select>
+        </div>
+        <div style="margin-top:8px">
+          向內增生新的：
+          <label class="sr-only" for="sel-in">向內增生</label>
+          <select id="sel-in">
+            <option value="">— 請選擇 —</option>
+            <option value="韌皮部">韌皮部</option>
+            <option value="木質部">木質部</option>
+          </select>
+        </div>
+        <div class="controls">
+          <button class="btn" data-check="q4" disabled>檢查答案</button>
+          <span class="muted">兩個都選擇後才可檢查</span>
+        </div>
+        <div class="feedback" data-fb="q4"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="nav">
+      <a href="1.html" aria-label="上一頁">← 上一頁</a>
+      <div class="hint">完成 4 題且全對後才能前往下一頁</div>
+      <a id="nextLink" href="3.html" class="disabled" aria-disabled="true" aria-label="下一頁">下一頁 →</a>
+    </div>
+  </footer>
+
+  <script>
+    // 狀態追蹤
+    const state = { q1:null, q2:null, q3:null, q4:null };
+    const nextLink = document.getElementById('nextLink');
+
+    function updateNextUnlock(){
+      const allCorrect = Object.values(state).every(v => v === true);
+      if(allCorrect){
+        nextLink.classList.remove('disabled');
+        nextLink.setAttribute('aria-disabled','false');
+      }
+    }
+
+    // 鎖定：僅鎖定「檢查答案」按鈕；若 lockAll=true 則連同輸入一起鎖
+    function lockQuestion(qid, lockAll=false){
+      const box = document.getElementById(qid);
+      const btn = box.querySelector(`button[data-check="${qid}"]`);
+      if(btn) btn.disabled = true;
+      if(lockAll){
+        box.querySelectorAll('input,select,.chip').forEach(el=>{
+          if(el.classList.contains('chip')){ el.dataset.fixed='1'; }
+          else{ el.disabled = true; }
+        });
+      }
+    }
+
+    // 重新作答：清空該題狀態、回饋、樣式，解鎖互動
+    function resetQuestion(qid){
+      const box = document.getElementById(qid);
+      box.classList.remove('correct','incorrect');
+      const fb = box.querySelector(`[data-fb="${qid}"]`);
+      fb.innerHTML = '';
+
+      // 解鎖互動
+      box.querySelectorAll('input,select,.chip').forEach(el=>{
+        if(el.classList.contains('chip')){ el.dataset.fixed='0'; }
+        else{ el.disabled = false; }
+      });
+
+      // 清空作答
+      if(qid==='q1'){
+        box.querySelectorAll('input[type="radio"]').forEach(r=>{ r.checked=false; });
+        setCheckEnabled('q1', false);
+      }
+      if(qid==='q2'){
+        box.querySelectorAll('input[type="checkbox"]').forEach(c=>{ c.checked=false; });
+        q2UpdateBtn();
+      }
+      if(qid==='q3'){
+        const pool = document.getElementById('pool');
+        [...box.querySelectorAll('.chip')].forEach(ch=>pool.appendChild(ch));
+        q3UpdateBtn();
+      }
+      if(qid==='q4'){
+        document.getElementById('sel-out').value='';
+        document.getElementById('sel-in').value='';
+        q4UpdateBtn();
+      }
+
+      // 檢查鍵回到不可按
+      const btn = box.querySelector(`button[data-check="${qid}"]`);
+      if(btn) btn.disabled = true;
+
+      // 狀態回復
+      state[qid] = null;
+      updateNextUnlock();
+    }
+
+    // 顯示回饋並處理鎖定/重做
+    function setResult(qid, isCorrect, feedbackHtml){
+      const box = document.getElementById(qid);
+      box.classList.remove('correct','incorrect');
+      box.classList.add(isCorrect ? 'correct':'incorrect');
+      const fb = box.querySelector(`[data-fb="${qid}"]`);
+      if(!isCorrect){
+        fb.innerHTML = feedbackHtml +
+          ` <div class="controls" style="margin-top:8px">
+              <button class="btn ghost" data-redo="${qid}" aria-label="重做本題">重做本題</button>
+            </div>`;
+        lockQuestion(qid, false); // 鎖檢查鍵，但保留輸入，讓學生可閱讀回饋後按重做
+        fb.querySelector(`button[data-redo="${qid}"]`).addEventListener('click', ()=> resetQuestion(qid));
+      }else{
+        fb.innerHTML = feedbackHtml;
+        lockQuestion(qid, true); // 全對後完全鎖定
+      }
+      state[qid] = isCorrect;
+      updateNextUnlock();
+    }
+
+    function setCheckEnabled(qid, enabled){
+      const btn = document.querySelector(`button[data-check="${qid}"]`);
+      if(btn) btn.disabled = !enabled;
+    }
+
+    /* ===== Q1 單選 ===== */
+    const q1Radios = document.querySelectorAll('input[name="q1"]');
+    q1Radios.forEach(r=>{
+      r.addEventListener('change', ()=>{
+        setCheckEnabled('q1', !!document.querySelector('input[name="q1"]:checked'));
+      });
+    });
+    document.querySelector('button[data-check="q1"]').addEventListener('click', ()=>{
+      const val = document.querySelector('input[name="q1"]:checked')?.value;
+      const ok = (val === 'A');
+      setResult('q1', ok,
+        ok ? '✅ 答對了：向日葵與榕樹的莖內維管束呈 <b class="k1">環狀排列</b>，且具 <b class="k4">形成層</b>。'
+           : '❌ 再想想！玉米、水稻屬於 <b class="k1">散生排列</b>，不是環狀。'
+      );
+    });
+
+    /* ===== Q2 複選 ===== */
+    const q2Boxes = document.querySelectorAll('input[name="q2"]');
+    const q2Must = new Set(['a','b','c','e']);
+    function q2Selected(){ return new Set([...document.querySelectorAll('input[name="q2"]:checked')].map(x=>x.value)); }
+    function q2UpdateBtn(){ setCheckEnabled('q2', q2Selected().size > 0); }
+    q2Boxes.forEach(cb=>cb.addEventListener('change', q2UpdateBtn));
+    q2UpdateBtn();
+    document.querySelector('button[data-check="q2"]').addEventListener('click', ()=>{
+      const chosen = q2Selected();
+      const correct = chosen.size === q2Must.size && [...q2Must].every(v=>chosen.has(v));
+      setResult('q2', correct,
+        correct
+          ? '✅ 太棒了！形成層會 <b class="k4">細胞分裂</b>，向外產生 <b class="k2">韌皮部</b>、向內產生 <b class="k3">木質部</b>，讓莖<b class="k4">加粗</b>。'
+          : '❌ 小提醒：散生排列（如玉米、水稻）<b>通常不具形成層</b>；其餘四項皆為正確敘述。'
+      );
+    });
+
+    /* ===== Q3 分類（點擊/拖放，事件綁在 .bucket 以改善投放） ===== */
+    const pool = document.getElementById('pool');
+
+    function cycleChip(el){
+      const parent = el.parentElement;
+      const targetHave = document.querySelector('[data-bucket="have"] .drop');
+      const targetNone = document.querySelector('[data-bucket="none"] .drop');
+      if(parent === pool){ targetHave.appendChild(el); }
+      else if(parent === targetHave){ targetNone.appendChild(el); }
+      else { pool.appendChild(el); }
+      q3UpdateBtn();
+    }
+
+    document.querySelectorAll('.chip').forEach(ch=>{
+      ch.addEventListener('click', ()=>{ if(ch.dataset.fixed!=='1') cycleChip(ch); });
+      ch.addEventListener('dragstart', ev=>{
+        ev.dataTransfer.setData('text/plain', ch.dataset.item);
+      });
+    });
+
+    // 讓整個 bucket 都能接住拖放，落點統一丟到其內部的 .drop
+    document.querySelectorAll('.bucket').forEach(b=>{
+      b.addEventListener('dragover', e=> e.preventDefault());
+      b.addEventListener('drop', e=>{
+        e.preventDefault();
+        const name = e.dataTransfer.getData('text/plain');
+        const chip = [...document.querySelectorAll('.chip')].find(x => x.dataset.item === name);
+        const targetDrop = b.querySelector('.drop');
+        if (chip && chip.dataset.fixed !== '1'){
+          targetDrop.appendChild(chip);
+          q3UpdateBtn();
+        }
+      });
+    });
+
+    // pool 也能接回
+    pool.addEventListener('dragover', ev=>ev.preventDefault());
+    pool.addEventListener('drop', ev=>{
+      ev.preventDefault();
+      const name = ev.dataTransfer.getData('text/plain');
+      const chip = [...document.querySelectorAll('.chip')].find(x=>x.dataset.item===name);
+      if(chip && chip.dataset.fixed!=='1'){ pool.appendChild(chip); q3UpdateBtn(); }
+    });
+
+    function q3AllPlaced(){ return pool.querySelectorAll('.chip').length===0; }
+    function q3UpdateBtn(){ setCheckEnabled('q3', q3AllPlaced()); }
+    q3UpdateBtn();
+
+    // 比對：用集合比較，不受排序影響
+    function setsEqual(a,b){
+      if(a.size !== b.size) return false;
+      for(const v of a){ if(!b.has(v)) return false; }
+      return true;
+    }
+
+    document.querySelector('button[data-check="q3"]').addEventListener('click', ()=>{
+      const inHave = new Set([...document.querySelectorAll('[data-bucket="have"] .chip')].map(x=>x.dataset.item));
+      const inNone = new Set([...document.querySelectorAll('[data-bucket="none"] .chip')].map(x=>x.dataset.item));
+      const ok = setsEqual(inHave, new Set(['向日葵','榕樹'])) &&
+                 setsEqual(inNone, new Set(['玉米','水稻']));
+      setResult('q3', ok,
+        ok ? '✅ 完美分類！<b class="k1">向日葵、榕樹</b>常見具形成層；<b class="k1">玉米、水稻</b>多為散生排列且通常不具形成層。'
+           : '❌ 再調整：具形成層 → 向日葵、榕樹；通常不具形成層 → 玉米、水稻。'
+      );
+    });
+
+    /* ===== Q4 下拉選配對 ===== */
+    const selOut = document.getElementById('sel-out');
+    const selIn = document.getElementById('sel-in');
+    function q4UpdateBtn(){ setCheckEnabled('q4', !!selOut.value && !!selIn.value); }
+    selOut.addEventListener('change', q4UpdateBtn);
+    selIn.addEventListener('change', q4UpdateBtn);
+    q4UpdateBtn();
+    document.querySelector('button[data-check="q4"]').addEventListener('click', ()=>{
+      const ok = (selOut.value==='韌皮部' && selIn.value==='木質部');
+      setResult('q4', ok,
+        ok ? '✅ 正確！形成層向外生<b class="k2">韌皮部</b>、向內生<b class="k3">木質部</b>。'
+           : '❌ 提示：向外 → <b class="k2">韌皮部</b>；向內 → <b class="k3">木質部</b>。'
+      );
+    });
+  </script>
+</body>
+</html>

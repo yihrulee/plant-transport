@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>植物的運輸_學習頁面_維管束的功能與分布</title>
+  <style>
+    :root{
+      --violet:#667eea; --purple:#764ba2;
+      --ink:#2d3748; --ink2:#4a5568; --muted:#e2e8f0;
+      --ok:#48bb78; --okbg:#c6f6d5; --ng:#f56565; --ngbg:#fed7d7;
+      --shadow:0 8px 25px rgba(0,0,0,.1);
+      --kw-bundle:#0ea5e9;   --kw-xylem:#2563eb;  --kw-phloem:#d97706;
+      --kw-water:#0891b2;    --kw-sugar:#16a34a;
+      --kw-up:#7c3aed; --kw-down:#dc2626; --kw-in:#059669; --kw-out:#ca8a04;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0; padding:0;
+      font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,-apple-system,"Segoe UI",Roboto,Arial,"PingFang TC","Heiti TC",sans-serif;
+      color:var(--ink);
+      background:linear-gradient(135deg,var(--violet) 0%,var(--purple) 100%);
+    }
+    .container{ max-width:1000px; margin:0 auto; min-height:100%; padding:22px; display:flex; flex-direction:column; }
+    .card{ background:#fff; border-radius:15px; padding:30px; margin-bottom:22px; box-shadow:var(--shadow); }
+    .header h1{ margin:0; color:#334155; font-size:2rem; font-weight:800; letter-spacing:.5px; }
+    h2{ margin:0 0 16px; font-size:1.35rem; border-bottom:3px solid var(--violet); padding-bottom:8px; }
+    p{ color:var(--ink2); line-height:1.9; font-size:1.06rem; }
+
+    /* 關鍵字樣式 */
+    .kw{ font-weight:700; padding:0 .25rem; border-radius:4px; }
+    .kw.bundle{ color:var(--kw-bundle); background:rgba(14,165,233,.10); }
+    .kw.xylem{ color:var(--kw-xylem); background:rgba(37,99,235,.12); }
+    .kw.phloem{ color:var(--kw-phloem); background:rgba(217,119,6,.12); }
+    .kw.water{ color:var(--kw-water); background:rgba(8,145,178,.12); }
+    .kw.sugar{ color:var(--kw-sugar); background:rgba(22,163,74,.12); }
+    .kw.up{ color:var(--kw-up); background:rgba(124,58,237,.12); }
+    .kw.down{ color:var(--kw-down); background:rgba(220,38,38,.12); }
+    .kw.in{ color:var(--kw-in); background:rgba(5,150,105,.12); }
+    .kw.out{ color:var(--kw-out); background:rgba(202,138,4,.12); }
+
+    /* 分布畫廊 */
+    .gallery{
+      display:grid; grid-template-columns:1fr 1fr; gap:18px; align-items:start;
+    }
+    .gallery figure{ margin:0; }
+    .gallery img{ width:100%; height:auto; border-radius:12px; border:2px solid var(--muted); display:block; background:#fff; cursor:zoom-in; }
+    .caption{ color:#64748b; font-size:.9rem; margin-top:6px; }
+
+    /* 練習區 */
+    .exercise{ background:#f7fafc; border-left:5px solid var(--violet); border-radius:12px; padding:22px; margin-top:4px; }
+    .q{ margin:16px 0 18px; }
+    .q-title{ font-weight:800; margin-bottom:10px; color:#1f2937; }
+    .pair-row, .mcq{
+      background:#fff; border:2px solid var(--muted); border-radius:12px; padding:14px;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:10px 0;
+    }
+    .tag{ font-weight:700; min-width:112px; }
+    .arrow{ color:var(--violet); font-weight:700; }
+    .dropdown{
+      border:2px solid var(--muted); border-radius:8px; background:#fff;
+      padding:10px 42px 10px 12px; font-size:1rem; cursor:pointer;
+      appearance:none; -webkit-appearance:none; -moz-appearance:none;
+      transition:border-color .2s, box-shadow .2s, background-color .2s;
+      background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M6 8l4 4 4-4' stroke='%236b7280' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+      background-repeat:no-repeat; background-position:right 12px center; background-size:16px 16px;
+    }
+    .dropdown:hover{ border-color:var(--violet); background:#f0f4ff; }
+    .dropdown:focus{ outline:none; border-color:var(--violet); box-shadow:0 0 0 3px rgba(102,126,234,.18); }
+    .correct{ border-color:var(--ok)!important; background:var(--okbg)!important; }
+    .incorrect{ border-color:var(--ng)!important; background:var(--ngbg)!important; }
+
+    .btn{ border:0; border-radius:10px; padding:12px 18px; font-weight:700; cursor:pointer; }
+    .btn-primary{ background:var(--violet); color:#fff; }
+    .btn-primary:hover{ background:#5a67d8; }
+    .btn-ghost{ background:#fff; color:#475569; border:2px solid var(--muted); }
+    .btn[disabled]{ background:#a0aec0; cursor:not-allowed; }
+    .btn-wrap{ display:flex; gap:10px; flex-wrap:wrap; }
+    .result{ margin-top:10px; padding:12px; border-radius:8px; display:none; font-weight:700; border:1px solid transparent; }
+    .result.ok{ background:var(--okbg); color:#22543d; border-color:var(--ok); }
+    .result.ng{ background:var(--ngbg); color:#742a2a; border-color:var(--ng); }
+
+    /* 進度條 */
+    .progress{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+    .bar{ flex:1; height:10px; background:#e5e7eb; border-radius:999px; overflow:hidden; }
+    .bar > span{ display:block; height:100%; width:0%; background:linear-gradient(90deg,#67e8f9,#60a5fa); transition:width .25s ease; }
+
+    .nav{ display:flex; justify-content:space-between; gap:12px; margin-top:22px; }
+    .nav a{ text-decoration:none; display:inline-flex; align-items:center; gap:8px; padding:12px 22px; border-radius:25px; font-weight:700; }
+    .nav .prev{ background:#fff; color:var(--violet); border:2px solid var(--violet); }
+    .nav .prev:hover{ background:var(--violet); color:#fff; }
+    .nav .next{ background:#fff; color:var(--violet); border:2px solid var(--violet); }
+    .nav .next:hover{ background:var(--violet); color:#fff; }
+    .next.disabled{ background:#e2e8f0!important; color:#a0aec0!important; border-color:#e2e8f0!important; pointer-events:none; cursor:not-allowed; }
+
+    @media (max-width:900px){
+      .gallery{ grid-template-columns:1fr; }
+    }
+
+    /* Lightbox */
+    .lightbox{
+      position:fixed; inset:0; background:rgba(0,0,0,.7);
+      display:none; align-items:center; justify-content:center; z-index:50;
+    }
+    .lightbox.open{ display:flex; }
+    .lightbox figure{ margin:0; max-width:min(92vw,1100px); max-height:92vh; }
+    .lightbox img{ width:100%; height:auto; border-radius:12px; box-shadow:var(--shadow); }
+    .close-btn{
+      position:absolute; top:16px; right:16px; background:#fff; border:0; padding:10px 14px;
+      border-radius:999px; font-weight:800; cursor:pointer;
+    }
+    .visually-hidden{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <!-- 標題 -->
+    <header class="card header" role="banner">
+      <h1>植物的運輸_學習頁面_維管束的功能與分布</h1>
+    </header>
+
+    <!-- 段落一：功能（純文字，無圖） -->
+    <section class="card" role="region" aria-labelledby="sec-func">
+      <h2 id="sec-func">維管束的功能</h2>
+      <p>
+        植物體內負責運輸水分與養分的細胞，排列成束，稱為
+        <span class="kw bundle">維管束</span>。其中運輸
+        <span class="kw water">水分與礦物質</span>的為
+        <span class="kw xylem">木質部</span>，細胞壁較厚並具支持功能；
+        光合作用所產生的<span class="kw sugar">可溶性養分</span>則由
+        <span class="kw phloem">韌皮部</span>負責運輸。
+      </p>
+    </section>
+
+    <!-- 段落二：分布（兩圖同段，雙欄畫廊） -->
+    <section class="card" role="region" aria-labelledby="sec-dist">
+      <h2 id="sec-dist">維管束的分布</h2>
+      <p>
+        維管束細胞細長，上下相接形成管道，由根、莖延伸至葉、花與果實。
+        在<strong>葉脈</strong>中，<span class="kw xylem">木質部</span>位在
+        <span class="kw up">上側（靠近上表皮）</span>，
+        <span class="kw phloem">韌皮部</span>位在
+        <span class="kw down">下側（靠近下表皮）</span>；
+        在<strong>莖</strong>的橫切面，通常<span class="kw xylem">木質部</span>在
+        <span class="kw in">內側</span>，<span class="kw phloem">韌皮部</span>在
+        <span class="kw out">外側</span>。
+      </p>
+      <div class="gallery" aria-label="維管束分布圖庫">
+        <figure>
+          <img class="zoomable" src="11.png" alt="葉的維管束分布：木質部在上側、韌皮部在下側" loading="lazy">
+          <figcaption class="caption">葉脈橫切示意：<b>木質部</b>在上側、<b>韌皮部</b>在下側。</figcaption>
+        </figure>
+        <figure>
+          <!-- 若你的圖檔叫 111.jpg，可直接把 src 換成 111.jpg；或保留 picture fallback -->
+          <picture>
+            <source srcset="111.png" type="image/png">
+            <img class="zoomable" src="111.jpg" alt="莖的維管束分布：木質部在內側、韌皮部在外側" loading="lazy">
+          </picture>
+          <figcaption class="caption">莖部橫切示意：<b>木質部</b>在內側、<b>韌皮部</b>在外側。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- 互動練習 -->
+    <section class="card exercise" role="region" aria-labelledby="exTitle">
+      <h2 id="exTitle">互動練習</h2>
+
+      <!-- 進度 -->
+      <div class="progress" aria-live="polite">
+        <div id="progText">完成度：0/3</div>
+        <div class="bar" aria-hidden="true"><span id="progBar"></span></div>
+      </div>
+
+      <!-- Q1：功能配對 -->
+      <div class="q" role="group" aria-labelledby="q1">
+        <div id="q1" class="q-title">題目一｜完成配對：選出木質部與韌皮部的主要運輸對象</div>
+
+        <div class="pair-row" id="row-xylem">
+          <span class="tag">木質部</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <label for="xylem" class="visually-hidden">木質部運輸</label>
+          <select id="xylem" class="dropdown" aria-label="木質部運輸">
+            <option value="">請選擇</option>
+            <option value="水分與礦物質">水分與礦物質</option>
+            <option value="光合作用的養分">光合作用的養分</option>
+          </select>
+        </div>
+
+        <div class="pair-row" id="row-phloem">
+          <span class="tag">韌皮部</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <label for="phloem" class="visually-hidden">韌皮部運輸</label>
+          <select id="phloem" class="dropdown" aria-label="韌皮部運輸">
+            <option value="">請選擇</option>
+            <option value="水分與礦物質">水分與礦物質</option>
+            <option value="光合作用的養分">光合作用的養分</option>
+          </select>
+        </div>
+
+        <div class="btn-wrap">
+          <button id="check1" class="btn btn-primary" type="button" disabled aria-disabled="true" aria-controls="res1">檢查答案</button>
+          <button id="redo1" class="btn btn-ghost" type="button" hidden>重做本題</button>
+        </div>
+        <div id="res1" class="result" aria-live="polite"></div>
+      </div>
+
+      <!-- Q2：位置判讀（葉與莖） -->
+      <div class="q" role="group" aria-labelledby="q2">
+        <div id="q2" class="q-title">題目二｜完成位置判讀（葉脈上下、莖的內外）</div>
+
+        <div class="pair-row" id="row-leaf-x">
+          <span class="tag">葉脈：木質部</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <label for="leafX" class="visually-hidden">葉脈木質部位置</label>
+          <select id="leafX" class="dropdown" aria-label="葉脈木質部位置">
+            <option value="">請選擇</option>
+            <option value="上側">上側（靠近上表皮）</option>
+            <option value="下側">下側（靠近下表皮）</option>
+          </select>
+        </div>
+
+        <div class="pair-row" id="row-leaf-p">
+          <span class="tag">葉脈：韌皮部</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <label for="leafP" class="visually-hidden">葉脈韌皮部位置</label>
+          <select id="leafP" class="dropdown" aria-label="葉脈韌皮部位置">
+            <option value="">請選擇</option>
+            <option value="上側">上側（靠近上表皮）</option>
+            <option value="下側">下側（靠近下表皮）</option>
+          </select>
+        </div>
+
+        <div class="pair-row" id="row-stem-x">
+          <span class="tag">莖：木質部</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <label for="stemX" class="visually-hidden">莖木質部位置</label>
+          <select id="stemX" class="dropdown" aria-label="莖木質部位置">
+            <option value="">請選擇</option>
+            <option value="內側">內側</option>
+            <option value="外側">外側</option>
+          </select>
+        </div>
+
+        <div class="pair-row" id="row-stem-p">
+          <span class="tag">莖：韌皮部</span>
+          <span class="arrow" aria-hidden="true">→</span>
+          <label for="stemP" class="visually-hidden">莖韌皮部位置</label>
+          <select id="stemP" class="dropdown" aria-label="莖韌皮部位置">
+            <option value="">請選擇</option>
+            <option value="內側">內側</option>
+            <option value="外側">外側</option>
+          </select>
+        </div>
+
+        <div class="btn-wrap">
+          <button id="check2" class="btn btn-primary" type="button" disabled aria-disabled="true" aria-controls="res2">檢查答案</button>
+          <button id="redo2" class="btn btn-ghost" type="button" hidden>重做本題</button>
+        </div>
+        <div id="res2" class="result" aria-live="polite"></div>
+      </div>
+
+      <!-- Q3：多選題 -->
+      <div class="q" role="group" aria-labelledby="q3">
+        <div id="q3" class="q-title">題目三｜勾選所有正確的敘述（至少 2 項）</div>
+        <div class="mcq" id="row-msq">
+          <fieldset style="border:0;margin:0;padding:0">
+            <legend class="visually-hidden">維管束概念多選</legend>
+            <label><input type="checkbox" class="ms" value="A"> 木質部主要運輸水分與礦物質。</label><br>
+            <label><input type="checkbox" class="ms" value="B"> 韌皮部負責運輸光合作用產生的養分。</label><br>
+            <label><input type="checkbox" class="ms" value="C"> 葉脈中韌皮部在上側、靠近上表皮。</label><br>
+            <label><input type="checkbox" class="ms" value="D"> 在莖內部，木質部通常位於外側、韌皮部在內側。</label>
+          </fieldset>
+        </div>
+        <div class="btn-wrap">
+          <button id="check3" class="btn btn-primary" type="button" disabled aria-disabled="true" aria-controls="res3">檢查答案</button>
+          <button id="redo3" class="btn btn-ghost" type="button" hidden>重做本題</button>
+        </div>
+        <div id="res3" class="result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- 導覽 -->
+    <nav class="nav" aria-label="頁面導覽">
+      <a class="prev" href="index.html" target="_self" aria-label="上一頁">← 上一頁</a>
+      <a id="nextBtn" class="next disabled" href="./2.html" target="_self" aria-label="下一頁" aria-disabled="true">下一頁 →</a>
+    </nav>
+  </main>
+
+  <!-- 圖片放大用 Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="圖片放大檢視">
+    <button class="close-btn" aria-label="關閉放大圖" id="lbClose">✕</button>
+    <figure><img id="lbImg" alt=""></figure>
+  </div>
+
+  <script>
+    // 狀態
+    let q1Ok=false,q2Ok=false,q3Ok=false;
+
+    // 元素
+    const el={
+      // Q1
+      xylem:document.getElementById('xylem'),
+      phloem:document.getElementById('phloem'),
+      rowXy:document.getElementById('row-xylem'),
+      rowPh:document.getElementById('row-phloem'),
+      chk1:document.getElementById('check1'),
+      redo1:document.getElementById('redo1'),
+      res1:document.getElementById('res1'),
+      // Q2
+      leafX:document.getElementById('leafX'),
+      leafP:document.getElementById('leafP'),
+      stemX:document.getElementById('stemX'),
+      stemP:document.getElementById('stemP'),
+      rowLX:document.getElementById('row-leaf-x'),
+      rowLP:document.getElementById('row-leaf-p'),
+      rowSX:document.getElementById('row-stem-x'),
+      rowSP:document.getElementById('row-stem-p'),
+      chk2:document.getElementById('check2'),
+      redo2:document.getElementById('redo2'),
+      res2:document.getElementById('res2'),
+      // Q3 多選
+      ms:document.querySelectorAll('.ms'),
+      rowMS:document.getElementById('row-msq'),
+      chk3:document.getElementById('check3'),
+      redo3:document.getElementById('redo3'),
+      res3:document.getElementById('res3'),
+      // nav/progress
+      next:document.getElementById('nextBtn'),
+      progText:document.getElementById('progText'),
+      progBar:document.getElementById('progBar'),
+      // lightbox
+      lb:document.getElementById('lightbox'),
+      lbImg:document.getElementById('lbImg'),
+      lbClose:document.getElementById('lbClose')
+    };
+
+    // 啟用檢查鍵判斷
+    function tChk1(){ const ok=el.xylem.value&&el.phloem.value; el.chk1.disabled=!ok; el.chk1.setAttribute('aria-disabled',String(!ok)); }
+    function tChk2(){ const ok=el.leafX.value&&el.leafP.value&&el.stemX.value&&el.stemP.value; el.chk2.disabled=!ok; el.chk2.setAttribute('aria-disabled',String(!ok)); }
+    function tChk3(){
+      const selected=[...el.ms].filter(i=>i.checked).length;
+      const ok = selected>=2; // 至少 2 項才可提交
+      el.chk3.disabled=!ok; el.chk3.setAttribute('aria-disabled',String(!ok));
+    }
+
+    ['change','keyup'].forEach(e=>{
+      el.xylem.addEventListener(e,tChk1); el.phloem.addEventListener(e,tChk1);
+      el.leafX.addEventListener(e,tChk2); el.leafP.addEventListener(e,tChk2);
+      el.stemX.addEventListener(e,tChk2); el.stemP.addEventListener(e,tChk2);
+    });
+    el.ms.forEach(cb=>cb.addEventListener('change', tChk3));
+
+    // 重做工具
+    function resetQ1(){ [el.rowXy,el.rowPh].forEach(r=>r.classList.remove('correct','incorrect')); el.xylem.value=""; el.phloem.value=""; el.res1.style.display="none"; el.chk1.disabled=true; el.chk1.setAttribute('aria-disabled','true'); el.redo1.hidden=true; }
+    function resetQ2(){ [el.rowLX,el.rowLP,el.rowSX,el.rowSP].forEach(r=>r.classList.remove('correct','incorrect')); el.leafX.value=""; el.leafP.value=""; el.stemX.value=""; el.stemP.value=""; el.res2.style.display="none"; el.chk2.disabled=true; el.chk2.setAttribute('aria-disabled','true'); el.redo2.hidden=true; }
+    function resetQ3(){
+      el.rowMS.classList.remove('correct','incorrect');
+      el.ms.forEach(i=>i.checked=false);
+      el.res3.style.display="none"; el.chk3.disabled=true; el.chk3.setAttribute('aria-disabled','true'); el.redo3.hidden=true;
+    }
+
+    // 題目一檢查
+    function check1(){
+      [el.rowXy,el.rowPh].forEach(r=>r.classList.remove('correct','incorrect'));
+      const a = el.xylem.value==='水分與礦物質';
+      const b = el.phloem.value==='光合作用的養分';
+      el.rowXy.classList.add(a?'correct':'incorrect');
+      el.rowPh.classList.add(b?'correct':'incorrect');
+      if(a&&b){ el.res1.className='result ok'; el.res1.textContent='✅ 正確：木質部→水分與礦物質；韌皮部→光合作用的養分。'; q1Ok=true; }
+      else{ el.res1.className='result ng'; el.res1.textContent='❌ 再想想！木質部運輸水與礦物；韌皮部運輸光合作用產物。'; q1Ok=false; }
+      el.res1.style.display='block'; el.chk1.disabled=true; el.chk1.setAttribute('aria-disabled','true'); el.redo1.hidden=false; updateNext();
+    }
+
+    // 題目二檢查
+    function check2(){
+      [el.rowLX,el.rowLP,el.rowSX,el.rowSP].forEach(r=>r.classList.remove('correct','incorrect'));
+      const okLX=el.leafX.value==='上側', okLP=el.leafP.value==='下側', okSX=el.stemX.value==='內側', okSP=el.stemP.value==='外側';
+      el.rowLX.classList.add(okLX?'correct':'incorrect');
+      el.rowLP.classList.add(okLP?'correct':'incorrect');
+      el.rowSX.classList.add(okSX?'correct':'incorrect');
+      el.rowSP.classList.add(okSP?'correct':'incorrect');
+      const allOk = okLX&&okLP&&okSX&&okSP;
+      if(allOk){ el.res2.className='result ok'; el.res2.textContent='🎉 全對：葉上木下韌；莖內木外韌。'; q2Ok=true; }
+      else{ const n=[okLX,okLP,okSX,okSP].filter(Boolean).length; el.res2.className='result ng'; el.res2.textContent=`目前正確 ${n}/4，提示：葉上木下韌；莖內木外韌。`; q2Ok=false; }
+      el.res2.style.display='block'; el.chk2.disabled=true; el.chk2.setAttribute('aria-disabled','true'); el.redo2.hidden=false; updateNext();
+    }
+
+    // 題目三檢查（多選，正解為 A 與 B）
+    function check3(){
+      el.rowMS.classList.remove('correct','incorrect');
+      const choose = new Set([...el.ms].filter(i=>i.checked).map(i=>i.value));
+      const correct = new Set(['A','B']);
+      const isExact = choose.size===correct.size && [...correct].every(v=>choose.has(v));
+
+      el.rowMS.classList.add(isExact?'correct':'incorrect');
+
+      if(isExact){
+        el.res3.className='result ok';
+        el.res3.textContent='✅ 做得好！正確選項：木質部運輸水與礦物；韌皮部運輸光合作用產物。';
+        q3Ok=true;
+      }else{
+        const picked=[...choose].sort().join('、') || '（未選）';
+        el.res3.className='result ng';
+        el.res3.textContent=`❌ 目前勾選：${picked}。提示：葉上木下韌；莖內木外韌。正確勾選應為前兩項。`;
+        q3Ok=false;
+      }
+      el.res3.style.display='block';
+      el.chk3.disabled=true; el.chk3.setAttribute('aria-disabled','true');
+      el.redo3.hidden=false;
+      updateNext();
+    }
+
+    // 解鎖下一頁 + 進度條
+    function updateNext(){
+      const done=[q1Ok,q2Ok,q3Ok].filter(Boolean).length;
+      el.progText.textContent=`完成度：${done}/3`;
+      el.progBar.style.width=`${(done/3)*100}%`;
+      const canGo = done===3;
+      el.next.classList.toggle('disabled',!canGo);
+      el.next.setAttribute('aria-disabled',String(!canGo));
+    }
+
+    // 綁定
+    document.getElementById('check1').addEventListener('click',check1);
+    document.getElementById('check2').addEventListener('click',check2);
+    document.getElementById('check3').addEventListener('click',check3);
+
+    el.redo1.addEventListener('click',()=>{resetQ1(); q1Ok=false; updateNext();});
+    el.redo2.addEventListener('click',()=>{resetQ2(); q2Ok=false; updateNext();});
+    el.redo3.addEventListener('click',()=>{resetQ3(); q3Ok=false; updateNext();});
+
+    // Lightbox
+    document.querySelectorAll('.zoomable').forEach(img=>{
+      img.addEventListener('click', ()=>{
+        el.lbImg.src=img.getAttribute('src'); el.lbImg.alt=img.alt||''; el.lb.classList.add('open'); el.lbClose.focus();
+      });
+    });
+    el.lbClose.addEventListener('click',()=>el.lb.classList.remove('open'));
+    el.lb.addEventListener('click',(e)=>{ if(e.target===el.lb) el.lb.classList.remove('open'); });
+    window.addEventListener('keydown',(e)=>{ if(e.key==='Escape') el.lb.classList.remove('open'); });
+  </script>
+</body>
+</html>
