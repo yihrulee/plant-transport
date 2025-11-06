@@ -302,7 +302,7 @@
     <!-- 送出區 -->
     <div class="card" id="submit-card" style="margin-top:18px;">
       <div class="center" style="flex-direction:column;">
-        <button id="submitBtn" class="btn primary" style="min-width:200px">提交答案</button>
+        <button id="submitBtn" class="btn primary" style="min-width:200px" disabled>提交答案</button>
         <div id="submitFB" class="feedback" style="width:100%;"></div>
         <div class="muted" style="margin-top:6px">
           目前指定的雲端表：<a href="https://docs.google.com/spreadsheets/d/11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA/edit?gid=0#gid=0" target="_blank">Google 試算表</a>（需設定 Apps Script 端點）
@@ -325,7 +325,7 @@
 
 <script>
 /* Apps Script 端點（可選） */
-const SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwnLvodlNtZ0Mqk_uEpJsR6YdbhmcTm4RAoRZ25wPlKFK_67FxJ3ujaCiTO4tYUoTZNEQ/exec";
+const SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynZY53cKaSt8Yy6TodKdWEvvHy3rfzbygT-7WeoHcpnPShgqNl5s4MO4vZYUTRzdo4TA/exec";
 
 /* 常數與工具 */
 const LS_KEY = "ringstory_form_v3_lrgrid_v5";
@@ -349,6 +349,13 @@ function updateNextLock(){
     }
   }
 }
+
+function submitReadyCheck(){
+  const ready = $('cls').value.trim() && $('no').value.trim() && $('name').value.trim()
+    && $('q1').value.trim() && $('q2').value.trim() && $('q3').value.trim() && $('q4').value.trim();
+  $('submitBtn').disabled = !ready;
+}
+
 function persist(){
   const data = {
     cls:$('cls').value.trim(),
@@ -375,12 +382,12 @@ function persist(){
     if(saved.q3) $('q3').value = saved.q3;
     if(saved.q4) $('q4').value = saved.q4;
   }catch(e){}
-  updateNextLock();
+  updateNextLock(); submitReadyCheck();
 })();
 
 /* 綁定輸入事件（即時解鎖判斷 + 暫存） */
 ["cls","no","name","q1","q2","q3","q4"].forEach(id=>{
-  $(id).addEventListener("input", persist);
+  $(id).addEventListener("input", function(){ persist(); submitReadyCheck(); });
 });
 
 /* 提交邏輯 */
