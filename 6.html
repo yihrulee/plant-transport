@@ -255,14 +255,14 @@
           <select data-k="a">
             <option value="">— 請選擇 —</option>
             <option value="open">多半張開</option>
-            <option value="close">傾向關閉以減少散失</option>
+            <option value="close">傾向關閉氣孔</option>
           </select>
         </label>
-        <label>此時木質部水分上行的主要動力：
+        <label>此時對植物本身有什麼意義：
           <select data-k="b">
             <option value="">— 請選擇 —</option>
-            <option value="rootpressure">根壓</option>
-            <option value="transpull">蒸散作用提供的拉力</option>
+            <option value="rootpressure">進入睡眠狀態</option>
+            <option value="transpull">減少水分散失</option>
           </select>
         </label>
       </div>
@@ -446,8 +446,8 @@
       const b = qEl.querySelector('select[data-k="b"]').value;
       const ok = (a==='close' && b==='transpull');
       setQuestionState(qEl, ok,
-        ok ? '答對了！乾燥時為減少水分散失，氣孔傾向關閉；而水分上行主要由蒸散拉力驅動。'
-           : '再想想：乾燥缺水時氣孔會如何調節？水分長距離上行主要由何者提供動力？');
+        ok ? '答對了！乾燥時為減少水分散失，氣孔傾向關閉。'
+           : '再想想!');
       qStatus.q4 = ok;
       checkBtn.disabled = true;
       if(!ok){ redoBtn.style.display = 'inline-flex'; }
