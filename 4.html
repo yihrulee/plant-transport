@@ -120,12 +120,26 @@
   h1{ text-align:center !important; }
   .subtitle, .tag{ display:none !important; }
 
+  /* 讓滿版區塊跨越整個橫幅 */
+  .lr-grid .full{ grid-column: 1 / -1; }
+  /* 問題四：滿版（full-bleed）設定 */
+  .card.bleed{ width:100vw; margin-left:calc(50% - 50vw); border-radius:0; }
+  .card.bleed .ask-inner{ max-width:1200px; margin:0 auto; padding-left:1rem; padding-right:1rem; }
+  /* Q4 寬度覆寫：與 p5 同寬（跨兩欄，取消 question 的 520px 限制） */
+  .lr-grid .q4{ grid-column: 1 / -1; }
+  .question.q4{ max-width: 100%; justify-self: stretch; }
+  /* 視覺對齊：可選，移除內層 ask 的外框，讓外層卡片為主 */
+  .question.q4 .ask{ border:none; background:transparent; padding:0; box-shadow:none; }
+  .question.q4 .ask-inner{ padding:0; }
+  /* Q4 輸入區：淺黃色底與其他題一致 */
+  .question.q4 .textarea-wrap{ background:#fff7ed; }
+  .question.q4 textarea{ background:transparent; }
 </style>
 </head>
 <body>
   <div class="container">
     <h1>年輪的故事-樹輪年代學 <span class="tag">自然｜國中</span></h1>
-    <div class="subtitle">請先填寫個人資訊，再閱讀文本並完成 3 題討論問題。全部題目皆答完後，右下「下一頁 →」會解鎖。</div>
+    <div class="subtitle">請先填寫個人資訊，再閱讀文本並完成 4 題討論問題。全部題目皆答完後，右下「下一頁 →」會解鎖。</div>
 
     <!-- 學生資料 -->
     <div class="card" id="stu-card">
@@ -267,6 +281,22 @@
         </p>
       </section>
 
+
+      <!-- 問題四（全寬，放在應用段落之後） -->
+      <section class="card question q4" id="sec5-ask">
+        <div class="ask">
+          <div class="ask-inner">
+            <h4>討論問題 4</h4>
+            <p class="prompt">讀完〈年輪的故事〉後，<span class="kw1">寫出令你印象最深刻的兩件事</span>，並簡要說明原因。</p>
+            <div class="textarea-wrap">
+              <textarea id="q4"></textarea>
+            </div>
+            <div id="fb4" class="feedback" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+
     </div><!-- /.lr-grid -->
 
     <!-- 送出區 -->
@@ -305,7 +335,7 @@ function setFB(el, ok, msg){
   el.textContent = msg;
 }
 function answersFilled(){
-  return $('q1').value.trim() && $('q2').value.trim() && $('q3').value.trim();
+  return $('q1').value.trim() && $('q2').value.trim() && $('q3').value.trim() && $('q4').value.trim();
 }
 function updateNextLock(){
   const nextLink = $('next-link');
@@ -327,6 +357,7 @@ function persist(){
     q1:$('q1').value.trim(),
     q2:$('q2').value.trim(),
     q3:$('q3').value.trim(),
+    q4:$('q4').value.trim(),
   };
   localStorage.setItem(LS_KEY, JSON.stringify(data));
   updateNextLock();
@@ -342,12 +373,13 @@ function persist(){
     if(saved.q1) $('q1').value = saved.q1;
     if(saved.q2) $('q2').value = saved.q2;
     if(saved.q3) $('q3').value = saved.q3;
+    if(saved.q4) $('q4').value = saved.q4;
   }catch(e){}
   updateNextLock();
 })();
 
 /* 綁定輸入事件（即時解鎖判斷 + 暫存） */
-["cls","no","name","q1","q2","q3"].forEach(id=>{
+["cls","no","name","q1","q2","q3","q4"].forEach(id=>{
   $(id).addEventListener("input", persist);
 });
 
@@ -359,24 +391,26 @@ $('submitBtn').addEventListener('click', async ()=>{
   const a1 = $('q1').value.trim();
   const a2 = $('q2').value.trim();
   const a3 = $('q3').value.trim();
+  const a4 = $('q4').value.trim();
 
   if(!cls || !no || !name){
     setFB($('submitFB'), false, "請先完整填寫：班級、座號、姓名。");
     return;
   }
   if(!answersFilled()){
-    setFB($('submitFB'), false, "請先回答完三個討論問題。");
+    setFB($('submitFB'), false, "請先回答完四個討論問題。");
     return;
   }
 
   $('fb1').className = "feedback correct"; $('fb1').textContent = "✅ 已回答。";
   $('fb2').className = "feedback correct"; $('fb2').textContent = "✅ 已回答。";
   $('fb3').className = "feedback correct"; $('fb3').textContent = "✅ 已回答。";
+  $('fb4').className = "feedback correct"; $('fb4').textContent = "✅ 已回答。";
 
   const payload = {
     timestamp: new Date().toISOString(),
     class: cls, seat: no, name,
-    q1: a1, q2: a2, q3: a3,
+    q1: a1, q2: a2, q3: a3, q4: a4,
     target_sheet_hint: "https://docs.google.com/spreadsheets/d/11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA/edit?gid=0#gid=0"
   };
 
@@ -411,7 +445,7 @@ $('submitBtn').addEventListener('click', async ()=>{
 
 // CSV 備援下載
 async function fallbackCSV(obj){
-  const headers = ["timestamp","class","seat","name","q1","q2","q3"];
+  const headers = ["timestamp","class","seat","name","q1","q2","q3","q4"];
   const escapeCSV = s => `"${String(s).replaceAll('"','""')}"`;
   const row = headers.map(h=>escapeCSV(obj[h] ?? "")).join(",");
   const csv = headers.join(",") + "\n" + row + "\n";
@@ -425,9 +459,9 @@ async function fallbackCSV(obj){
 
 /* 防止提交前關閉 */
 window.addEventListener("beforeunload", function (e) {
-  const a1 = $('q1').value.trim(), a2 = $('q2').value.trim(), a3 = $('q3').value.trim();
+  const a1 = $('q1').value.trim(), a2 = $('q2').value.trim(), a3 = $('q3').value.trim(), a4 = $('q4').value.trim();
   const btnDisabled = $('submitBtn').disabled;
-  if((a1 || a2 || a3) && !btnDisabled){
+  if((a1 || a2 || a3 || a4) && !btnDisabled){
     e.preventDefault(); e.returnValue = "";
   }
 });
