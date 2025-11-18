@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -380,11 +382,109 @@
       </div>
     </section>
 
+    <div class="export-area" style="text-align:center; margin:24px 0;">
+      <button class="btn" onclick="downloadPDF()">下載完成的學習單（PDF）</button>
+      <button class="btn" style="margin-left:12px;" onclick="downloadPNG()">下載完成的學習單（PNG 圖片）</button>
+    </div>
+
   </div>
 </div>
 
 <script>
+  async function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const card = document.querySelector('.card');
+    if (!card) return;
+
+    // 捲到最上方，避免截圖時位置偏移
+    window.scrollTo(0, 0);
+
+    // 以較高解析度擷取整個卡片
+    const canvas = await html2canvas(card, { scale: 2, useCORS: true });
+
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // 將 A4 尺寸換算成 canvas 上的高度（像素）
+    const imgWidth = pageWidth;
+    const imgHeightPerPage = canvas.height * (imgWidth / canvas.width);
+    const pxPerMm = canvas.height / imgHeightPerPage;
+    const pageHeightPx = pageHeight * pxPerMm;
+
+    let remainingHeight = canvas.height;
+    let pageIndex = 0;
+
+    while (remainingHeight > 0) {
+      // 建立暫存 canvas，切出每一頁要顯示的區段
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = Math.min(pageHeightPx, remainingHeight);
+      const pageCtx = pageCanvas.getContext('2d');
+
+      pageCtx.fillStyle = '#ffffff';
+      pageCtx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+
+      // 從原始長圖中擷取對應區段貼到 pageCanvas
+      pageCtx.drawImage(
+        canvas,
+        0,
+        pageIndex * pageHeightPx,
+        canvas.width,
+        pageCanvas.height,
+        0,
+        0,
+        canvas.width,
+        pageCanvas.height
+      );
+
+      const imgData = pageCanvas.toDataURL('image/png');
+
+      // 計算此頁在 PDF 上的高度（mm）
+      const pageImgHeightMm = (pageCanvas.height / pxPerMm);
+
+      if (pageIndex > 0) {
+        pdf.addPage();
+      }
+      pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, pageImgHeightMm);
+
+      remainingHeight -= pageHeightPx;
+      pageIndex++;
+    }
+
+    const cls = (document.getElementById('class')?.value || '').trim();
+    const num = (document.getElementById('number')?.value || '').trim();
+    const name = (document.getElementById('name')?.value || '').trim();
+    const filename = `${cls}_${num}_${name}.pdf`;
+
+    pdf.save(filename);
+  }
+
   let oxygenChart = null;
+
+
+
+  async function downloadPNG() {
+    const card = document.querySelector('.card');
+    if (!card) return;
+
+    window.scrollTo(0, 0);
+
+    const canvas = await html2canvas(card, { scale: 2, useCORS: true });
+    const imgData = canvas.toDataURL('image/png');
+
+    const cls = (document.getElementById('class')?.value || '').trim();
+    const num = (document.getElementById('number')?.value || '').trim();
+    const name = (document.getElementById('name')?.value || '').trim();
+    const filename = `${cls}_${num}_${name}.png`;
+
+    const link = document.createElement('a');
+    link.href = imgData;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   function getOxygenData() {
     const ids = ["tube1", "tube2", "tube3", "tube4", "tube5"];
