@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>酵素作用探究實驗學習單</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Microsoft JhengHei", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #333;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 20px 3vw 40px 3vw;
+    }
+
+    .card {
+      width: 100%;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px 4vw 30px 4vw;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 1.7rem;
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 0.95rem;
+    }
+
+    .student-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-bottom: 20px;
+      padding: 10px;
+      background: #f0f4ff;
+      border-radius: 8px;
+    }
+
+    .student-info label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.95rem;
+    }
+
+    .student-info input {
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      min-width: 80px;
+    }
+
+    section {
+      margin-bottom: 24px;
+    }
+
+    section h2 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      border-left: 4px solid #4a76ff;
+      padding-left: 8px;
+    }
+
+    p {
+      margin: 4px 0 8px 0;
+      line-height: 1.6;
+      font-size: 0.97rem;
+    }
+
+    .highlight {
+      color: #d35400;
+      font-weight: 600;
+    }
+
+    .data-table-wrapper {
+      overflow-x: auto;
+      background: #fffaf0;
+      border-radius: 8px;
+      padding: 10px;
+      border: 1px solid #f0d9a7;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    thead {
+      background: #ffe6b3;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fff7e6;
+    }
+
+    input.data-input {
+      width: 80px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      border: 1px solid #bbb;
+      text-align: right;
+    }
+
+    .chart-area {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f0f7ff;
+      border-radius: 8px;
+      border: 1px solid #c7ddff;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 14px;
+      margin-top: 8px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #4a76ff;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .btn:hover {
+      background: #385be0;
+    }
+
+    .question-block {
+      background: #f7fbff;
+      border-radius: 8px;
+      border: 1px solid #d3e3ff;
+      padding: 10px 12px;
+      margin-top: 8px;
+    }
+
+    .question-block h3 {
+      margin: 0 0 6px 0;
+      font-size: 1rem;
+      color: #2c3e50;
+    }
+
+    .question-block ol {
+      margin: 4px 0 0 20px;
+      padding: 0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 60px;
+      resize: vertical;
+      padding: 6px 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .data-flex {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-top: 12px;
+    }
+
+    .data-flex .data-table-wrapper {
+      flex: 1;
+    }
+
+    .data-flex .chart-area {
+      flex: 1;
+      margin-top: 0;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 16px 12px 24px 12px;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      .student-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .data-flex {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="card">
+    <h1>酵素作用探究實驗學習單</h1>
+    <div class="subtitle">主題：不同材料中酵素活性對雙氧水分解產生氧氣量的影響</div>
+
+    <!-- 一. 學生基本資料 -->
+    <section id="student-info-section">
+      <div class="student-info">
+        <label>班級：
+          <input type="text" id="class" placeholder="例如：801">
+        </label>
+        <label>座號：
+          <input type="text" id="number" placeholder="例如：15">
+        </label>
+        <label>姓名：
+          <input type="text" id="name" placeholder="請輸入姓名">
+        </label>
+      </div>
+    </section>
+
+    <!-- 二. 實驗目的與原理 -->
+    <section id="intro-section">
+      <h2>一、實驗目的與科學原理</h2>
+      <p>
+        本實驗將在五支試管中分別放入
+        <span class="highlight">酵母菌、煮沸的紅蘿蔔、新鮮紅蘿蔔、新鮮葉片、乾枯葉片</span>，
+        再加入<strong>雙氧水（過氧化氫，H<sub>2</sub>O<sub>2</sub>）</strong>，觀察並測量產生的氧氣量。
+      </p>
+      <p>
+        實驗目的：比較不同材料中<SPAN class="highlight">酵素（如過氧化氫酶）活性</SPAN>的差異，探討
+        <span class="highlight">加熱處理、組織是否新鮮或乾枯</span>等因素對氧氣產生量的影響。
+      </p>
+      <p>
+        科學原理：活細胞中常含有<strong>過氧化氫酶</strong>等酵素，可加速分解雙氧水，產生
+        <span class="highlight">水與氧氣</span>。酵素具有<span class="highlight">專一性與活性受溫度、組織狀態等影響</span>的特性，
+        若酵素經高溫加熱變性或組織乾枯失去活性，則氧氣產生量會明顯改變。
+      </p>
+    </section>
+
+    <!-- 三. 數據表與長條圖 -->
+    <section id="data-section">
+      <h2>二、實驗數據記錄與長條圖統計</h2>
+      <p>請根據實驗結果，將各試管的氧氣產生量（例如：量筒中氣泡體積，單位可用「毫升」）填入下表：</p>
+
+      <div class="data-flex">
+        <div class="data-table-wrapper">
+          <table>
+            <thead>
+            <tr>
+              <th>試管編號</th>
+              <th>材料/處理條件</th>
+              <th>氧氣產生量（mL）</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>1</td>
+              <td>酵母菌</td>
+              <td><input type="number" step="0.1" class="data-input" id="tube1" placeholder="0.0"></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>煮沸的紅蘿蔔</td>
+              <td><input type="number" step="0.1" class="data-input" id="tube2" placeholder="0.0"></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>新鮮紅蘿蔔</td>
+              <td><input type="number" step="0.1" class="data-input" id="tube3" placeholder="0.0"></td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>新鮮葉片</td>
+              <td><input type="number" step="0.1" class="data-input" id="tube4" placeholder="0.0"></td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>乾枯葉片</td>
+              <td><input type="number" step="0.1" class="data-input" id="tube5" placeholder="0.0"></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="chart-area">
+          
+          
+          <canvas id="oxygenChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 四. 討論問題第一部分 -->
+    <section id="discussion1-section">
+      <h2>三、討論問題（一）— 比較第 2 支（煮沸的紅蘿蔔）與第 3 支（新鮮紅蘿蔔）試管</h2>
+      
+      <div class="question-block">
+        
+        <ol>
+          <li>操作變因是什麼？</li>
+        </ol>
+        <textarea></textarea>
+
+        <ol start="2">
+          <li>請寫出實驗結果。</li>
+        </ol>
+        <textarea></textarea>
+
+        <ol start="3">
+          <li>請解釋此實驗結果的可能原因。</li>
+        </ol>
+        <textarea></textarea>
+      </div>
+    </section>
+
+    <!-- 五. 討論問題第二部分 -->
+    <section id="discussion2-section">
+      <h2>四、討論問題（二）— 比較第 4 支（新鮮葉片）與第 5 支（乾枯葉片）試管</h2>
+      
+      <div class="question-block">
+        
+        <ol>
+          <li>操作變因是什麼？</li>
+        </ol>
+        <textarea></textarea>
+
+        <ol start="2">
+          <li>請寫出實驗結果。</li>
+        </ol>
+        <textarea></textarea>
+
+        <ol start="3">
+          <li>請解釋此實驗結果的可能原因。</li>
+        </ol>
+        <textarea></textarea>
+      </div>
+    </section>
+
+    <!-- 六. 討論問題第三部分 -->
+    <section id="discussion3-section">
+      <h2>五、討論問題（三）— 比較第 1 支（酵母菌）、第 3 支（新鮮紅蘿蔔）與第 4 支（新鮮葉片）試管</h2>
+      
+      <div class="question-block">
+        
+        <ol>
+          <li>操作變因是什麼？</li>
+        </ol>
+        <textarea></textarea>
+
+        <ol start="2">
+          <li>請寫出實驗結果。</li>
+        </ol>
+        <textarea></textarea>
+
+        <ol start="3">
+          <li>請解釋此實驗結果的可能原因。</li>
+        </ol>
+        <textarea></textarea>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  let oxygenChart = null;
+
+  function getOxygenData() {
+    const ids = ["tube1", "tube2", "tube3", "tube4", "tube5"];
+    return ids.map(id => {
+      const value = parseFloat(document.getElementById(id).value);
+      return isNaN(value) ? 0 : value;
+    });
+  }
+
+  function generateChart() {
+    const ctx = document.getElementById("oxygenChart").getContext("2d");
+    const data = getOxygenData();
+
+    const labels = [
+      "1 酵母菌",
+      "2 煮沸紅蘿蔔",
+      "3 新鮮紅蘿蔔",
+      "4 新鮮葉片",
+      "5 乾枯葉片"
+    ];
+
+    if (oxygenChart) {
+      oxygenChart.destroy();
+    }
+
+    oxygenChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [{
+          label: "氧氣產生量（mL）",
+          data: data
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "氧氣產生量（mL）"
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: "試管與材料"
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true
+          },
+          tooltip: {
+            enabled: true
+          }
+        }
+      }
+    });
+  }
+
+  // 初次載入時建立一個空的長條圖，並在輸入時自動更新長條圖
+  window.addEventListener("load", () => {
+    generateChart();
+    const ids = ["tube1", "tube2", "tube3", "tube4", "tube5"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("input", generateChart);
+        el.addEventListener("change", generateChart);
+      }
+    });
+  });
+</script>
+</body>
+</html>
