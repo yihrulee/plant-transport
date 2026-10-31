@@ -96,12 +96,21 @@
     .lesson.hero .banner-wrap img{ width:75%; max-width:75%; }
   }
 </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script><script src="learning-score.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>植物的運輸_學習頁面_樹皮與年輪 <span class="badge">自然｜國中</span></h1>
     <div class="subtitle">閱讀重點＋多元題型練習（答對全部題目後可前往下一頁）</div>
 
+  <section class="pt-lesson-video" id="lesson-video-3" aria-labelledby="lesson-video-title-3">
+    <h2 id="lesson-video-title-3">學習影片｜樹皮與年輪</h2>
+    <video controls playsinline preload="metadata" width="1920" height="1080" poster="videos/lesson-3.jpg" aria-label="樹皮與年輪學習影片">
+      <source src="videos/lesson-3.mp4" type="video/mp4">
+      您的瀏覽器無法播放此影片，請<a href="videos/lesson-3.mp4">開啟 MP4 影片</a>。
+    </video>
+    <p class="pt-hint">可先觀看影片，再閱讀下方內容與完成練習。播放控制列可調整進度、音量與全螢幕。</p>
+  </section>
     <!-- 第一段 -->
     <div class="card lesson">
       <div>
@@ -255,6 +264,9 @@
   const nextLink = document.getElementById('next-link');
   function updateNext(){
     const allOK = Object.values(state).every(v=>v===true);
+    PT.markReady("p3", allOK);
+    nextLink.classList.toggle("disabled", !allOK);
+    nextLink.setAttribute("aria-disabled", String(!allOK));
     if(allOK){
       nextLink.classList.remove('disabled');
       nextLink.removeAttribute('aria-disabled');
@@ -271,6 +283,7 @@
   }
   function readyToggle(btn, isReady){ btn.disabled = !isReady; }
   function showFB(el, ok, msg){
+    PT.learning.record(el.id.replace(/-fb$/, ''), ok);
     el.className = 'feedback '+(ok?'correct':'incorrect');
     el.textContent = msg;
   }

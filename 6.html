@@ -104,6 +104,7 @@
   .legend, .legend .chip, .legend .dot{ display:none !important; }
 
 </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script><script src="learning-score.js"></script>
 </head>
 <body>
 <header>
@@ -112,6 +113,14 @@
 </header>
 
 <main>
+  <section class="pt-lesson-video" id="lesson-video-6" aria-labelledby="lesson-video-title-6">
+    <h2 id="lesson-video-title-6">學習影片｜植物體內的水分運輸</h2>
+    <video controls playsinline preload="metadata" width="1920" height="1080" poster="videos/lesson-6.jpg" aria-label="植物體內的水分運輸學習影片">
+      <source src="videos/lesson-6.mp4" type="video/mp4">
+      您的瀏覽器無法播放此影片，請<a href="videos/lesson-6.mp4">開啟 MP4 影片</a>。
+    </video>
+    <p class="pt-hint">可先觀看影片，再閱讀下方內容與完成練習。播放控制列可調整進度、音量與全螢幕。</p>
+  </section>
   <section class="card flex-row" aria-labelledby="s1h">
     <div class="flex-col">
       <h2 id="s1h">從根到葉：水分的上行之路</h2>
@@ -289,6 +298,7 @@
 
   function updateNextUnlock(){
     const allOk = Object.values(qStatus).every(Boolean);
+    PT.markReady("p6", allOk);
     if(allOk){
       nextBtn.classList.remove('disabled');
       nextBtn.setAttribute('aria-disabled','false');
@@ -300,6 +310,7 @@
 
   // Helpers
   function setQuestionState(qEl, ok, msg){
+    PT.learning.record(qEl.id, ok);
     const fb = qEl.querySelector('.feedback');
     qEl.classList.remove('correct','incorrect');
     if(ok){

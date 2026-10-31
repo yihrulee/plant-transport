@@ -135,22 +135,12 @@
   .question.q4 .textarea-wrap{ background:#fff7ed; }
   .question.q4 textarea{ background:transparent; }
 </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>年輪的故事-樹輪年代學 <span class="tag">自然｜國中</span></h1>
-    <div class="subtitle">請先填寫個人資訊，再閱讀文本並完成 4 題討論問題。全部題目皆答完後，右下「下一頁 →」會解鎖。</div>
-
-    <!-- 學生資料 -->
-    <div class="card" id="stu-card">
-      <div class="section-title">學生資訊</div>
-      <div class="fields">
-        <div class="field"><label for="cls">班級</label><input id="cls" type="text" placeholder="例：701"></div>
-        <div class="field"><label for="no">座號</label><input id="no" type="text" inputmode="numeric" placeholder="例：12"></div>
-        <div class="field"><label for="name">姓名</label><input id="name" type="text" placeholder="例：王小明"></div>
-      </div>
-      <div class="muted" style="margin-top:8px">＊會連同作答一併送出；本機暫存避免誤關視窗遺失。</div>
-    </div>
+    <div class="subtitle">閱讀文本並完成 4 題討論問題，確認上傳後即可前往下一頁。</div>
 
     <!-- 左右兩欄主體 -->
     <div class="lr-grid">
@@ -304,9 +294,6 @@
       <div class="center" style="flex-direction:column;">
         <button id="submitBtn" class="btn primary" style="min-width:200px" disabled>提交答案</button>
         <div id="submitFB" class="feedback" style="width:100%;"></div>
-        <div class="muted" style="margin-top:6px">
-          目前指定的雲端表：<a href="https://docs.google.com/spreadsheets/d/11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA/edit?gid=0#gid=0" target="_blank">Google 試算表</a>（需設定 Apps Script 端點）
-        </div>
       </div>
     </div>
   </div><!-- /.container -->
@@ -323,155 +310,6 @@
     </div>
   </div>
 
-<script>
-/* Apps Script 端點（可選） */
-const SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbynZY53cKaSt8Yy6TodKdWEvvHy3rfzbygT-7WeoHcpnPShgqNl5s4MO4vZYUTRzdo4TA/exec";
-
-/* 常數與工具 */
-const LS_KEY = "ringstory_form_v3_lrgrid_v5";
-function $(id){ return document.getElementById(id); }
-function setFB(el, ok, msg){
-  el.className = "feedback " + (ok ? "correct" : "incorrect");
-  el.textContent = msg;
-}
-function answersFilled(){
-  return $('q1').value.trim() && $('q2').value.trim() && $('q3').value.trim() && $('q4').value.trim();
-}
-function updateNextLock(){
-  const nextLink = $('next-link');
-  if(answersFilled()){
-    nextLink.classList.remove('disabled');
-    nextLink.removeAttribute('aria-disabled');
-  }else{
-    if(!nextLink.classList.contains('disabled')){
-      nextLink.classList.add('disabled');
-      nextLink.setAttribute('aria-disabled','true');
-    }
-  }
-}
-
-function submitReadyCheck(){
-  const ready = $('cls').value.trim() && $('no').value.trim() && $('name').value.trim()
-    && $('q1').value.trim() && $('q2').value.trim() && $('q3').value.trim() && $('q4').value.trim();
-  $('submitBtn').disabled = !ready;
-}
-
-function persist(){
-  const data = {
-    cls:$('cls').value.trim(),
-    no:$('no').value.trim(),
-    name:$('name').value.trim(),
-    q1:$('q1').value.trim(),
-    q2:$('q2').value.trim(),
-    q3:$('q3').value.trim(),
-    q4:$('q4').value.trim(),
-  };
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
-  updateNextLock();
-}
-
-/* 載入本機暫存 */
-(function restore(){
-  try{
-    const saved = JSON.parse(localStorage.getItem(LS_KEY)||"{}");
-    if(saved.cls) $('cls').value = saved.cls;
-    if(saved.no) $('no').value = saved.no;
-    if(saved.name) $('name').value = saved.name;
-    if(saved.q1) $('q1').value = saved.q1;
-    if(saved.q2) $('q2').value = saved.q2;
-    if(saved.q3) $('q3').value = saved.q3;
-    if(saved.q4) $('q4').value = saved.q4;
-  }catch(e){}
-  updateNextLock(); submitReadyCheck();
-})();
-
-/* 綁定輸入事件（即時解鎖判斷 + 暫存） */
-["cls","no","name","q1","q2","q3","q4"].forEach(id=>{
-  $(id).addEventListener("input", function(){ persist(); submitReadyCheck(); });
-});
-
-/* 提交邏輯 */
-$('submitBtn').addEventListener('click', async ()=>{
-  const cls = $('cls').value.trim();
-  const no = $('no').value.trim();
-  const name = $('name').value.trim();
-  const a1 = $('q1').value.trim();
-  const a2 = $('q2').value.trim();
-  const a3 = $('q3').value.trim();
-  const a4 = $('q4').value.trim();
-
-  if(!cls || !no || !name){
-    setFB($('submitFB'), false, "請先完整填寫：班級、座號、姓名。");
-    return;
-  }
-  if(!answersFilled()){
-    setFB($('submitFB'), false, "請先回答完四個討論問題。");
-    return;
-  }
-
-  $('fb1').className = "feedback correct"; $('fb1').textContent = "✅ 已回答。";
-  $('fb2').className = "feedback correct"; $('fb2').textContent = "✅ 已回答。";
-  $('fb3').className = "feedback correct"; $('fb3').textContent = "✅ 已回答。";
-  $('fb4').className = "feedback correct"; $('fb4').textContent = "✅ 已回答。";
-
-  const payload = {
-    timestamp: new Date().toISOString(),
-    class: cls, seat: no, name,
-    q1: a1, q2: a2, q3: a3, q4: a4,
-    target_sheet_hint: "https://docs.google.com/spreadsheets/d/11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA/edit?gid=0#gid=0"
-  };
-
-  if(SCRIPT_WEB_APP_URL){
-    try{
-      const resp = await fetch(SCRIPT_WEB_APP_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"text/plain;charset=utf-8" },
-        body: JSON.stringify(payload)
-      });
-      if(resp.ok){
-        setFB($('submitFB'), true, "✅ 已提交成功！右下「下一頁 →」已可點擊。");
-        $('submitBtn').disabled = true;
-      }else{
-        await fallbackCSV(payload);
-        setFB($('submitFB'), false, "⚠️ 雲端回應非 200，已下載 CSV 備份供手動上傳；同時已解鎖下一頁。");
-        $('submitBtn').disabled = true;
-      }
-    }catch(e){
-      await fallbackCSV(payload);
-      setFB($('submitFB'), false, "⚠️ 無法連線到雲端端點，已下載 CSV 備份供手動上傳；同時已解鎖下一頁。");
-      $('submitBtn').disabled = true;
-    }
-  } else {
-    await fallbackCSV(payload);
-    setFB($('submitFB'), true, "✅ 已通過（本活動只要答完即通過）。尚未設定雲端端點，已下載 CSV 備份；可手動匯入試算表。");
-    $('submitBtn').disabled = true;
-  }
-
-  updateNextLock();
-});
-
-// CSV 備援下載
-async function fallbackCSV(obj){
-  const headers = ["timestamp","class","seat","name","q1","q2","q3","q4"];
-  const escapeCSV = s => `"${String(s).replaceAll('"','""')}"`;
-  const row = headers.map(h=>escapeCSV(obj[h] ?? "")).join(",");
-  const csv = headers.join(",") + "\n" + row + "\n";
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = "plant-transport_作答.csv";
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-}
-
-/* 防止提交前關閉 */
-window.addEventListener("beforeunload", function (e) {
-  const a1 = $('q1').value.trim(), a2 = $('q2').value.trim(), a3 = $('q3').value.trim(), a4 = $('q4').value.trim();
-  const btnDisabled = $('submitBtn').disabled;
-  if((a1 || a2 || a3 || a4) && !btnDisabled){
-    e.preventDefault(); e.returnValue = "";
-  }
-});
-</script>
+<script src="ringstory.js"></script>
 </body>
 </html>

@@ -98,6 +98,7 @@
     .hint{color:#0f766e; font-size:.9rem}
     .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
   </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script><script src="learning-score.js"></script>
 </head>
 <body>
   <header>
@@ -106,6 +107,14 @@
   </header>
 
   <main>
+  <section class="pt-lesson-video" id="lesson-video-2" aria-labelledby="lesson-video-title-2">
+    <h2 id="lesson-video-title-2">學習影片｜莖內維管束排列</h2>
+    <video controls playsinline preload="metadata" width="1920" height="1080" poster="videos/lesson-2.jpg" aria-label="莖內維管束排列學習影片">
+      <source src="videos/lesson-2.mp4" type="video/mp4">
+      您的瀏覽器無法播放此影片，請<a href="videos/lesson-2.mp4">開啟 MP4 影片</a>。
+    </video>
+    <p class="pt-hint">可先觀看影片，再閱讀下方內容與完成練習。播放控制列可調整進度、音量與全螢幕。</p>
+  </section>
     <!-- 內容段落 1 -->
     <section class="card grid" aria-labelledby="sec1">
       <div>
@@ -241,6 +250,9 @@
 
     function updateNextUnlock(){
       const allCorrect = Object.values(state).every(v => v === true);
+      PT.markReady("p2", allCorrect);
+      nextLink.classList.toggle("disabled", !allCorrect);
+      nextLink.setAttribute("aria-disabled", String(!allCorrect));
       if(allCorrect){
         nextLink.classList.remove('disabled');
         nextLink.setAttribute('aria-disabled','false');
@@ -304,6 +316,7 @@
 
     // 顯示回饋並處理鎖定/重做
     function setResult(qid, isCorrect, feedbackHtml){
+      PT.learning.record(qid, isCorrect);
       const box = document.getElementById(qid);
       box.classList.remove('correct','incorrect');
       box.classList.add(isCorrect ? 'correct':'incorrect');

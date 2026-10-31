@@ -1,0 +1,50 @@
+{
+  "totalBytes": 76829481,
+  "videos": [
+    {
+      "page": 1,
+      "title": "維管束的功能與分布",
+      "file": "lesson-1.mp4",
+      "poster": "lesson-1.jpg",
+      "sourceName": "第1頁_維管束的功能與分布.mp4",
+      "bytes": 13211699,
+      "sha256": "d9866f70d8009450c6a72ea2629478ff0af85259b4e5fc7acd7f09cd35967c59"
+    },
+    {
+      "page": 2,
+      "title": "莖內維管束排列",
+      "file": "lesson-2.mp4",
+      "poster": "lesson-2.jpg",
+      "sourceName": "第2頁_莖內維管束排列.mp4",
+      "bytes": 14970133,
+      "sha256": "c3ec99ed3a9d3b2807fa22ed4087c0aeb03b0310571d987ee41cf6e81a754c7c"
+    },
+    {
+      "page": 3,
+      "title": "樹皮與年輪",
+      "file": "lesson-3.mp4",
+      "poster": "lesson-3.jpg",
+      "sourceName": "第3頁_樹皮與年輪.mp4",
+      "bytes": 18871933,
+      "sha256": "dc6590c04acfc01b2aa69deda03968ce4ff17130c97cf36a7d21f1d630735007"
+    },
+    {
+      "page": 5,
+      "title": "植物體內的養分運輸",
+      "file": "lesson-5.mp4",
+      "poster": "lesson-5.jpg",
+      "sourceName": "第5頁_植物體內的養分運輸.mp4",
+      "bytes": 13113778,
+      "sha256": "0303d4aaa1c826755769ab31712918b350b6079785aa942a2e20761782487fcf"
+    },
+    {
+      "page": 6,
+      "title": "植物體內的水分運輸",
+      "file": "lesson-6.mp4",
+      "poster": "lesson-6.jpg",
+      "sourceName": "第6頁_植物體內的水分運輸.mp4",
+      "bytes": 16661938,
+      "sha256": "efd415419917f9392861e93abb01203f8cabc0e9d8e81773b9d442860d89f4c7"
+    }
+  ]
+}

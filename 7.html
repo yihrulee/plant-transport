@@ -19,16 +19,18 @@
     .pill.title{font-size:20px;font-weight:700;letter-spacing:.5px}
     .wrap{max-width:1000px;margin:0 auto;padding:12px}
     #stageWrap{position:relative;max-width:1000px;margin:10px auto;border:1px solid #1f334a;border-radius:12px;overflow:hidden;background:#0b1a2b}
-    canvas{display:block;width:100%;height:auto;outline:none; touch-action:none;}
+    canvas{display:block;width:100%;height:clamp(520px,52vw,620px);outline:none;touch-action:none;}
     /* overlay */
     .overlay{
       position:absolute;inset:0;background:rgba(6,12,20,.9);
-      display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;color:#e8f0ff
+      display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;color:#e8f0ff;z-index:3
     }
-    .card{max-width:820px;background:#0f2138;border:1px solid #1f334a;border-radius:16px;padding:22px 22px 24px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+    .card{max-width:820px;max-height:100%;overflow-y:auto;background:#0f2138;border:1px solid #1f334a;border-radius:16px;padding:22px 22px 24px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
     .card h1{margin:.2em 0 .4em 0;font-size:34px}
     .card p{margin:.4em 0;line-height:1.6;font-size:16px}
     .rules{display:grid;gap:8px;text-align:left;background:#0b1a2b;border:1px dashed #274764;padding:12px;border-radius:12px;margin:10px 0}
+    .rules summary{cursor:pointer;font-weight:700}
+    @media(max-width:600px){.overlay{padding:12px}.card{padding:16px}.card h1{font-size:25px}.card p{font-size:14px}.controls button{touch-action:none}}
     button.primary{
       background:#3b82f6;border:none;color:white;padding:10px 18px;border-radius:999px;font-size:16px;cursor:pointer
     }
@@ -44,7 +46,7 @@
       text-align:center;padding:12px 16px;
       color:#04243b;font-weight:800;
       background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0));
-      font-size:32px; /* 題目 32px */
+      font-size:clamp(20px,3vw,32px);
       line-height:1.25;
       text-shadow: 0 1px 0 rgba(255,255,255,.35);
     }
@@ -69,7 +71,7 @@
     .questionBar .kw-guttation{color:#ef476f} /* 吐水 */
 
     /* on-screen controls */
-    .controls{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:10px}
+    .controls{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:10px;z-index:2}
     .controls button{width:60px;height:60px;border-radius:14px;border:1px solid #1f334a;background:#112b45;color:#e2e8f0;font-size:24px}
     .controls button:active{transform:translateY(1px)}
     /* footer nav */
@@ -80,6 +82,7 @@
     .scoreBig{font-size:30px;color:#fff;margin:.2em 0 .6em}
     .muted{color:#9fb3c8;font-size:14px}
   </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script>
 </head>
 <body>
   <header>
@@ -108,14 +111,14 @@
           <h1>植物的運輸挑戰賽</h1>
           <p>操作：<span class="kbd">↑</span>/<span class="kbd">↓</span>、<span class="kbd">W</span>/<span class="kbd">S</span>，或直接在畫面拖曳到目標高度；手機也可點擊右下按鈕。</p>
           
-          <div class="rules">
+          <details class="rules"><summary>遊戲規則（展開查看）</summary>
             <p>• 目標：控制小魚吃到正確答案。</p>
             <p>• 時間：2 分鐘　起始分 55 分。</p>
             <p>• 操作：按 ↑ / ↓、W / S 上下移動；也可拖曳畫面或使用右下按鈕。</p>
             <p>• 題目：顯示在上方；三個選項會從右往左飄過。</p>
             <p>• 判分：吃對 +3 顯示愛心；吃錯 −3 顯示鞭炮；沒吃到不計分。</p>
-            <p>• 結束：顯示分數後，頁尾「下一頁 →」解鎖。</p>
-          </div>
+            <p>• 結束：顯示分數並確認上傳後，頁尾「下一頁 →」解鎖。</p>
+          </details>
 
           <button class="primary" id="btnStart">開始遊戲</button>
           <p class="muted">提示：開始後畫布自動取得焦點；若無反應，請點一下畫布再操作。</p>
@@ -166,8 +169,8 @@
         options:["空氣濕度高","強風","高溫晴朗"], answer:0 },
       { q:"氣孔打開時，保衛細胞會變成什麼樣子？",
         options:["變鼓（膨脹）","變扁（縮小）","沒變化"], answer:0 },
-      { q:"木質部導管的細胞成熟時多為？",
-        options:["厚壁、無細胞內容物","具葉綠體的活細胞","表皮細胞"], answer:0 },
+      { q:"形成層的功能是什麼？",
+        options:["讓樹不斷增高","細胞分裂","協助養分運輸"], answer:1 },
       { q:"清晨葉尖上的小水滴主要是因為？",
         options:["根壓把水擠出（吐水）","蒸散很強","昨晚的雨水"], answer:0 },
     ];
@@ -192,13 +195,13 @@
     function fitCanvas(){
       const rect = canvas.getBoundingClientRect();
       canvas.width  = Math.floor(rect.width * DPR);
-      canvas.height = Math.floor((rect.width * 0.52) * DPR);
+      canvas.height = Math.floor(rect.height * DPR);
     }
     fitCanvas(); window.addEventListener('resize', fitCanvas);
 
     const GAME = {
       state: 'start',
-      score: 55,
+      score: 55, correct: 0, wrong: 0, attemptId: null, runToken: 0,
       timeLeft: 120, // seconds
       qIndex: 0,
       questionAnswered: false,
@@ -263,9 +266,14 @@
       const fontSize = 18*DPR;
       ctx.font = `${fontSize}px system-ui, "Noto Sans TC"`;
       const padding = 12*DPR;
-      const textW = ctx.measureText(text).width;
+      const maxTextWidth = Math.min(400*DPR,canvas.width*.68)-padding*2;
+      const lines=[];let line='';
+      for(const character of text){if(line&&ctx.measureText(line+character).width>maxTextWidth){lines.push(line);line=character;}else line+=character;}
+      if(line)lines.push(line);
+      const textW = Math.max(...lines.map(value=>ctx.measureText(value).width));
       const w = textW + padding*2;
-      const h = 36*DPR;
+      const lineHeight=23*DPR;
+      const h = Math.max(36*DPR,lines.length*lineHeight+padding);
       return {
         id: nextOptId++,
         text, isCorrect,
@@ -281,7 +289,7 @@
           ctx.fillStyle = '#111'; /* 黑字 */
           ctx.font = `${fontSize}px system-ui, "Noto Sans TC"`;
           ctx.textBaseline = 'middle';
-          ctx.fillText(this.text, this.x + padding, this.y + this.h/2);
+          lines.forEach((value,index)=>ctx.fillText(value,this.x+padding,this.y+this.h/2+(index-(lines.length-1)/2)*lineHeight));
         },
         update(){
           this.x -= GAME.optionSpeed;
@@ -327,7 +335,7 @@
       hudQ.textContent = `第 ${GAME.qIndex+1} / ${QUESTIONS.length} 題`;
       const order = shuffle([0,1,2]);
       const lanes = [];
-      const top = 160 * DPR, bottom = canvas.height - 90 * DPR; // 題幹下移
+      const top = Math.max(160,questionBar.offsetTop+questionBar.offsetHeight+40)*DPR, bottom = canvas.height - 80*DPR;
       const laneCount = 3;
       for(let i=0;i<laneCount;i++){
         lanes.push(top + i*(bottom-top)/(laneCount-1));
@@ -343,6 +351,7 @@
       }
     }
     function nextQuestionOrEnd(){
+      if (GAME.state !== "playing") return;
       if (GAME.qIndex < QUESTIONS.length - 1) {
         GAME.qIndex++;
         loadQuestion();
@@ -487,12 +496,13 @@
             GAME.eatenIds.add(opt.id);
             const mouthX = fish.x + fish.r*1.25, mouthY = fish.y;
             if (opt.isCorrect && !GAME.questionAnswered) {
-              GAME.score += 3; GAME.questionAnswered = true; flash('+3', 'good');
+              GAME.score += 3; GAME.correct++; GAME.questionAnswered = true; flash('+3', 'good');
               emitHearts(mouthX, mouthY);
               hudScore.textContent = `分數：${GAME.score}`;
-              setTimeout(nextQuestionOrEnd, 350);
+              const token = GAME.runToken;
+              setTimeout(() => { if (GAME.runToken === token) nextQuestionOrEnd(); }, 350);
             } else if (!opt.isCorrect) {
-              GAME.score -= 3; flash('−3', 'bad');
+              GAME.score -= 3; GAME.wrong++; flash('−3', 'bad');
               emitCracker(mouthX, mouthY);
               hudScore.textContent = `分數：${GAME.score}`;
             }
@@ -592,6 +602,9 @@
     // ====== 開始 / 結束 ======
     document.getElementById('btnStart').addEventListener('click', startGame);
     function startGame(){
+      stopTimer();
+      GAME.runToken++; GAME.correct = 0; GAME.wrong = 0; GAME.attemptId = PT.uuid();
+      nextLink.classList.add("disabled"); nextLink.setAttribute("aria-disabled", "true");
       overlay.style.display = 'none';
       GAME.state = 'playing';
       GAME.score = 55; GAME.timeLeft = 120; GAME.qIndex = 0;
@@ -608,17 +621,22 @@
       stopTimer();
       overlay.style.display = 'flex';
       overlay.querySelector('.card').innerHTML = `
-        <h1>時間到！</h1>
-        <div class="scoreBig">你的分數：<b>${GAME.score}</b></div>
+        <h1>挑戰完成</h1>
+        <div class="scoreBig">你的分數：<b>${GAME.score}</b>／100</div>
+        <p id="challenge-upload" role="status">正在上傳本次遊戲紀錄…</p>
         <p class="muted">提示：再次挑戰可嘗試吃掉正確答案、閃避錯誤答案。</p>
         <button class="primary" id="btnRestart">再玩一次</button>
       `;
       overlay.querySelector('#btnRestart').addEventListener('click', ()=>{ startGame(); });
       const nextLink = document.getElementById('nextLink');
-      nextLink.classList.remove('disabled');
-      nextLink.setAttribute('aria-disabled','false');
+      nextLink.classList.add('disabled');
+      nextLink.setAttribute('aria-disabled','true');
       nextLink.href = './8.html';
-      nextLink.title = '前往下一頁';
+      nextLink.title = '上傳成功後前往下一頁';
+      const attemptId = GAME.attemptId;
+      PT.submit('p7', {attemptId, correct:GAME.correct, wrong:GAME.wrong, seconds:120-GAME.timeLeft})
+        .then(() => { if(GAME.attemptId===attemptId) { const el=document.getElementById('challenge-upload'); if(el)el.textContent='本次分數已確認上傳。'; } })
+        .catch(err => { if(GAME.attemptId===attemptId) { const el=document.getElementById('challenge-upload'); if(el)el.textContent=err.message; } });
     }
 
     // 啟動渲染循環（待開始）

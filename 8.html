@@ -4,8 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>影響蒸散作用因素探討｜芹菜 × 量筒 × 液面下降模擬</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" />
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="vendor/chart.umd.min.js"></script>
 <style>
   :root{
     --bg:#f6f7fb; --ink:#1f2937; --accent:#b91c1c; --leaf:#16a34a; --leaf-dark:#0f7c35;
@@ -78,11 +77,12 @@
   #endLink[aria-disabled="true"]{ background:linear-gradient(135deg,#9ca3af,#6b7280); pointer-events:none; cursor:not-allowed; filter:grayscale(.1) }
   #endLink.unlocked{ background:linear-gradient(135deg,#22c55e,#16a34a) }
 </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script>
 </head>
 <body>
   <header>
     <h1>影響蒸散作用因素探討</h1>
-    <div class="sub">以芹菜插入 10 mL 量筒，觀察紅色液體液面下降的情形，並以「液面散失的水量」代表蒸散速率。</div>
+    <div class="sub">觀察有葉與無葉枝條在相同時間內的水量變化。數據為教學模擬，可作為探討葉片與蒸散關係的線索。</div>
   </header>
 
   <main class="container">
@@ -140,7 +140,7 @@
                 </tfoot>
               </table>
             </div>
-            <div class="footnote">註：本模擬為短時間觀察，實際課堂可延長時間並記錄多次測量。</div>
+            <div class="footnote">註：數據由程式隨機產生，屬於教學模擬。真實實驗應控制水面蒸發等其他失水來源，並重複測量。</div>
           </div>
         </div>
         <div class="col"><div class="chart-wrap"><canvas id="barChart" height="260" aria-label="散失水量長條圖" role="img"></canvas></div></div>
@@ -149,12 +149,7 @@
 
     <!-- 問題作答（含身分欄） -->
     <section id="qaSection" class="stage hidden">
-      <h3 style="margin:6px 0 12px; font-size:20px;">請先填寫身分，再回答問題</h3>
-      <div class="id-grid" style="margin-bottom:10px;">
-        <div class="field"><label for="cls">班級</label><input id="cls" name="cls" placeholder="例如：707" autocomplete="section-class class"></div>
-        <div class="field"><label for="seat">座號</label><input id="seat" name="seat" type="text" inputmode="numeric" pattern="^(0[1-9]|[12][0-9]|30)$" maxlength="2" placeholder="01～30" autocomplete="on"></div>
-        <div class="field"><label for="stu">姓名</label><input id="stu" name="stu" placeholder="請填寫真實姓名" autocomplete="name"></div>
-      </div>
+      <h3 style="margin:6px 0 12px; font-size:20px;">根據模擬結果，回答探究問題</h3>
 
       <div class="qa">
         <div class="q-card"><h4>1）請寫出實驗問題</h4><textarea id="q1" required disabled></textarea></div>
@@ -174,219 +169,15 @@
 
     <section class="stage">
       <div class="footer-nav">
-        <a href="#" class="btn" id="prevLink" aria-disabled="true">← 上一頁</a>
-        <a class="btn" id="endLink" aria-disabled="true" title="請先完成並提交">課程結束</a>
+        <a href="7.html" class="btn" id="prevLink">← 上一頁</a>
+        <a class="btn" id="endLink" aria-disabled="true" title="請先完成並提交">前往總評量 →</a>
       </div>
-      <div class="footnote">提交成功前無法點擊「課程結束」。提交成功後將解鎖並導回 index.html。</div>
+      <div class="footnote">答案確認上傳後，即可前往總評量。數據為教學模擬，並非真實量測。</div>
     </section>
   </main>
 
-<script>
-(function(){
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxbnQ4MpeyIAi4XAqUh_BS_5te9tNHi8NPI0G7Yb7F19HtUq7m43t8csFEbemgQUt8m/exec";
-  const SPREADSHEET_ID = "1YZapyA6IIWE7MGOhTjhtekJGIsdCfJMhnOlmAiwCM44";
-  const SHEET_NAME = "P_transpiration";
+<script src="transpiration.js"></script>
 
-  const initialVolume = 10.0;
-  const lossNoLeavesRange = [0.6, 2.0];
-  const lossLeavesRange   = [4.2, 6.8];
-  const animationMs = 5000;
 
-  // ===== DOM（宣告一次就好） =====
-  const startBtn = document.getElementById('startBtn');
-  const resultBtn= document.getElementById('resultBtn');
-  const statusEl = document.getElementById('status');
-  const liqA = document.getElementById('liqA');
-  const liqB = document.getElementById('liqB');
-  const resultsSection = document.getElementById('resultsSection');
-  const qaSection = document.getElementById('qaSection');
-  const endAEl  = document.getElementById('endA');
-  const endBEl  = document.getElementById('endB');
-  const lossAEl = document.getElementById('lossA');
-  const lossBEl = document.getElementById('lossB');
-  const diffEndEl  = document.getElementById('diffEnd');
-  const diffLossEl = document.getElementById('diffLoss');
-  const clsEl = document.getElementById('cls');
-  const seatEl= document.getElementById('seat');
-  const stuEl = document.getElementById('stu');
-  const endLink = document.getElementById('endLink');
-  const submitBtn = document.getElementById('submitBtn');
-  const submitStatus = document.getElementById('submitStatus');
-  const submitHints = document.getElementById('submitHints');
-  const qIds = ['q1','q2','q3','q4','q5','q6'];
-
-  // 建刻度
-  function buildTicks(){
-    document.querySelectorAll('.cylinder .ticks').forEach(t => {
-      t.innerHTML = '';
-      for (let i=0;i<=10;i++){
-        const line = document.createElement('div');
-        line.className = 'tick-line' + (i%5===0 ? ' major' : '');
-        line.style.bottom = (i*10)+'%';
-        t.appendChild(line);
-        if (i%5===0){
-          const lab = document.createElement('div');
-          lab.className = 'tick-label';
-          lab.style.bottom = (i*10)+'%';
-          lab.textContent = i;
-          t.appendChild(lab);
-        }
-      }
-    });
-  }
-  buildTicks();
-
-  // 座號 01～30 自動格式化
-  function normalizeSeat(){
-    let v = seatEl.value.replace(/\D/g,'');
-    if (v.length === 0){ seatEl.value = ''; seatEl.setCustomValidity(''); return; }
-    if (v.length === 1){ v = '0' + v; }
-    v = v.slice(0,2);
-    if (!/^(0[1-9]|[12][0-9]|30)$/.test(v)){ seatEl.setCustomValidity('座號請輸入 01～30'); }
-    else{ seatEl.setCustomValidity(''); }
-    seatEl.value = v;
-  }
-  seatEl.addEventListener('blur', normalizeSeat);
-  seatEl.addEventListener('change', normalizeSeat);
-  seatEl.addEventListener('input', () => { seatEl.value = seatEl.value.replace(/\D/g,'').slice(0,2); });
-
-  // ===== 課程結束按鈕：嚴格鎖定直到提交成功 =====
-  function disableEndLink(){
-    endLink.setAttribute('aria-disabled','true');
-    endLink.classList.remove('unlocked');
-    endLink.removeAttribute('href');
-    endLink.setAttribute('tabindex','-1');
-    endLink.setAttribute('title','請先完成並提交');
-  }
-  function unlockEndLink(){
-    endLink.classList.add('unlocked');
-    endLink.removeAttribute('aria-disabled');
-    endLink.setAttribute('href','index.html');
-    endLink.removeAttribute('tabindex');
-    endLink.setAttribute('title','已提交，可結束課程');
-  }
-  disableEndLink();
-  endLink.addEventListener('click', (e)=>{
-    if (endLink.getAttribute('aria-disabled') === 'true'){ e.preventDefault(); e.stopPropagation(); return false; }
-  });
-
-  // ===== 驗證＆解鎖（只控制提交；endLink 交由提交成功觸發） =====
-  function identityOK(){
-    const clsOK  = (clsEl.value||'').trim().length>0;
-    const seatVal = (seatEl.value||'').trim();
-    const seatOK = /^(0?[1-9]|[12][0-9]|30)$/.test(seatVal);
-    const stuOK  = (stuEl.value||'').trim().length>0;
-    clsEl.classList.toggle('invalid', !clsOK);
-    stuEl.classList.toggle('invalid', !stuOK);
-    seatEl.classList.toggle('invalid', !seatOK);
-    return clsOK && seatOK && stuOK;
-  }
-  function allQsFilled(){ return qIds.every(id => { const el = document.getElementById(id); return el && el.value && el.value.trim().length>0; }); }
-  function unmetReasons(){
-    const reasons = [];
-    if (qaSection.classList.contains('hidden')) reasons.push('請先依序點「開始實驗」→「觀看實驗結果」');
-    if ((clsEl.value||'').trim()==='') reasons.push('尚未填寫 <b>班級</b>');
-    const seatVal = (seatEl.value||'').trim();
-    if (seatVal==='') reasons.push('尚未填寫 <b>座號</b>');
-    else if (!/^(0?[1-9]|[12][0-9]|30)$/.test(seatVal)) reasons.push('<b>座號</b>需為 01～30');
-    if ((stuEl.value||'').trim()==='') reasons.push('尚未填寫 <b>姓名</b>');
-    qIds.forEach((id, idx) => {
-      const el = document.getElementById(id);
-      if (el && (el.value||'').trim()==='') reasons.push(`第 <b>${idx+1}</b> 題尚未作答`);
-    });
-    return reasons;
-  }
-  function refreshUnlocks(){
-    const allowAnswer = identityOK();
-    qIds.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = !allowAnswer; });
-    const ok = allowAnswer && allQsFilled();
-    submitBtn.disabled = !ok;
-    const r = unmetReasons();
-    submitHints.innerHTML = r.length===0 ? '已可提交。請按 <b>提交答案</b> ✅' : '尚無法提交，請先完成：<br>' + r.map(s=>'・'+s).join('<br>');
-  }
-  [clsEl, seatEl, stuEl].forEach(el => el.addEventListener('input', refreshUnlocks));
-  qIds.forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', refreshUnlocks); });
-  refreshUnlocks();
-
-  // ===== 實驗流程 =====
-  let hasRun = false;
-  let lossA = null, lossB = null, endA = null, endB = null;
-  startBtn.addEventListener('click', () => {
-    if (hasRun) return; hasRun = true;
-    // 保證有葉子 > 無葉子
-    lossA = Math.min(Math.round((Math.random()*(lossNoLeavesRange[1]-lossNoLeavesRange[0])+lossNoLeavesRange[0])*10)/10, 2.0);
-    lossB = Math.round((Math.max(lossA+0.8, lossLeavesRange[0]) + Math.random()* (lossLeavesRange[1]-Math.max(lossA+0.8, lossLeavesRange[0])))*10)/10;
-    endA = Math.max(0, Math.round((initialVolume - lossA)*10)/10);
-    endB = Math.max(0, Math.round((initialVolume - lossB)*10)/10);
-    const targetA = (endA/initialVolume)*90, targetB = (endB/initialVolume)*90;
-    statusEl.textContent = '實驗進行中：液面下降中…';
-    startBtn.disabled = true; resultBtn.disabled = true;
-    liqA.style.height = '90%'; liqB.style.height = '90%';
-    requestAnimationFrame(()=>{ liqA.style.height = Math.max(4,Math.min(94,targetA))+'%'; liqB.style.height = Math.max(4,Math.min(94,targetB))+'%'; });
-    setTimeout(()=>{ statusEl.textContent = '實驗結束 ✅ 請點擊「觀看實驗結果」。'; resultBtn.disabled = false; }, animationMs);
-  });
-
-  let chart = null;
-  resultBtn.addEventListener('click', () => {
-    if (resultBtn.disabled) return;
-    endAEl.textContent  = endA.toFixed(1);
-    endBEl.textContent  = endB.toFixed(1);
-    lossAEl.textContent = lossA.toFixed(1);
-    lossBEl.textContent = lossB.toFixed(1);
-    diffEndEl.textContent  = (endB - endA).toFixed(1);
-    diffLossEl.textContent = (lossB - lossA).toFixed(1);
-    resultsSection.classList.remove('hidden');
-    qaSection.classList.remove('hidden');
-    const ctx = document.getElementById('barChart');
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-      type:'bar',
-      data:{ labels:['無葉子','有葉子'], datasets:[{ label:'散失水量（mL）', data:[lossA,lossB] }] },
-      options:{ animation:{ duration:800 }, responsive:true, plugins:{ legend:{ display:true }, tooltip:{ enabled:true } },
-                scales:{ y:{ beginAtZero:true, title:{ display:true, text:'mL' } } } }
-    });
-    refreshUnlocks();
-  });
-
-  // ===== 送出（成功後解鎖「課程結束」→ index.html） =====
-  async function submitToSheet(){
-    if (submitBtn.disabled) return;
-    submitBtn.disabled = true; submitBtn.textContent = '上傳中…';
-    submitStatus.className = 'badge warn'; submitStatus.textContent = '上傳中';
-    const now = new Date();
-    let seatVal = (seatEl.value||'').trim(); if (/^[1-9]$/.test(seatVal)) seatVal = seatVal.padStart(2,'0');
-    const payload = {
-      spreadsheetId: SPREADSHEET_ID, sheetName: SHEET_NAME,
-      record: {
-        timestamp: now.toISOString(), localTime: now.toLocaleString(),
-        className: (clsEl.value||'').trim(), seatNo: seatVal, studentName: (stuEl.value||'').trim(),
-        q1: q1.value.trim(), q2: q2.value.trim(), q3: q3.value.trim(), q4: q4.value.trim(), q5: q5.value.trim(), q6: q6.value.trim(),
-        endA, endB, lossA, lossB, diffLoss: (lossB - lossA),
-        userAgent: navigator.userAgent, page: location.href, referrer: document.referrer || null
-      }
-    };
-    try{
-      const res = await fetch(GAS_URL, { method:'POST', mode:'no-cors', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
-      if (!res || (res.type === 'opaque') || res.ok){
-        submitStatus.className = 'badge ok'; submitStatus.textContent = '提交成功';
-        submitBtn.textContent = '✅ 已提交';
-        unlockEndLink();
-      }else{
-        const msg = await res.text().catch(()=>res.statusText);
-        throw new Error('HTTP '+res.status+' '+msg);
-      }
-    }catch(err){
-      console.error(err);
-      submitStatus.className = 'badge err'; submitStatus.textContent = '提交失敗，請稍後再試';
-      submitBtn.textContent = '重新提交'; submitBtn.disabled = false; return;
-    }
-  }
-  submitBtn.addEventListener('click', submitToSheet);
-})();
-</script>
-
-<!-- Apps Script 的欄位順序（請在 Code.gs 用作首列標題）：
-const HEADERS = ['timestamp','localTime','className','seatNo','studentName','q1','q2','q3','q4','q5','q6','endA','endB','lossA','lossB','diffLoss','userAgent','page','referrer'];
--->
 </body>
 </html>

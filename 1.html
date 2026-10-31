@@ -112,6 +112,7 @@
     }
     .visually-hidden{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
   </style>
+<link rel="stylesheet" href="course.css"><script src="course-config.js"></script><script src="course.js"></script><script src="learning-score.js"></script>
 </head>
 <body>
   <main class="container">
@@ -120,6 +121,14 @@
       <h1>植物的運輸_學習頁面_維管束的功能與分布</h1>
     </header>
 
+  <section class="pt-lesson-video" id="lesson-video-1" aria-labelledby="lesson-video-title-1">
+    <h2 id="lesson-video-title-1">學習影片｜維管束的功能與分布</h2>
+    <video controls playsinline preload="metadata" width="1920" height="1080" poster="videos/lesson-1.jpg" aria-label="維管束的功能與分布學習影片">
+      <source src="videos/lesson-1.mp4" type="video/mp4">
+      您的瀏覽器無法播放此影片，請<a href="videos/lesson-1.mp4">開啟 MP4 影片</a>。
+    </video>
+    <p class="pt-hint">可先觀看影片，再閱讀下方內容與完成練習。播放控制列可調整進度、音量與全螢幕。</p>
+  </section>
     <!-- 段落一：功能（純文字，無圖） -->
     <section class="card" role="region" aria-labelledby="sec-func">
       <h2 id="sec-func">維管束的功能</h2>
@@ -152,10 +161,10 @@
           <figcaption class="caption">葉脈橫切示意：<b>木質部</b>在上側、<b>韌皮部</b>在下側。</figcaption>
         </figure>
         <figure>
-          <!-- 若你的圖檔叫 111.jpg，可直接把 src 換成 111.jpg；或保留 picture fallback -->
+          <!-- 圖片使用專案內現有的 PNG 檔案。 -->
           <picture>
             <source srcset="111.png" type="image/png">
-            <img class="zoomable" src="111.jpg" alt="莖的維管束分布：木質部在內側、韌皮部在外側" loading="lazy">
+            <img class="zoomable" src="111.png" alt="莖的維管束分布：木質部在內側、韌皮部在外側" loading="lazy">
           </picture>
           <figcaption class="caption">莖部橫切示意：<b>木質部</b>在內側、<b>韌皮部</b>在外側。</figcaption>
         </figure>
@@ -365,6 +374,7 @@
       [el.rowXy,el.rowPh].forEach(r=>r.classList.remove('correct','incorrect'));
       const a = el.xylem.value==='水分與礦物質';
       const b = el.phloem.value==='光合作用的養分';
+      PT.learning.record('q1', a&&b);
       el.rowXy.classList.add(a?'correct':'incorrect');
       el.rowPh.classList.add(b?'correct':'incorrect');
       if(a&&b){ el.res1.className='result ok'; el.res1.textContent='✅ 正確：木質部→水分與礦物質；韌皮部→光合作用的養分。'; q1Ok=true; }
@@ -381,6 +391,7 @@
       el.rowSX.classList.add(okSX?'correct':'incorrect');
       el.rowSP.classList.add(okSP?'correct':'incorrect');
       const allOk = okLX&&okLP&&okSX&&okSP;
+      PT.learning.record('q2', allOk);
       if(allOk){ el.res2.className='result ok'; el.res2.textContent='🎉 全對：葉上木下韌；莖內木外韌。'; q2Ok=true; }
       else{ const n=[okLX,okLP,okSX,okSP].filter(Boolean).length; el.res2.className='result ng'; el.res2.textContent=`目前正確 ${n}/4，提示：葉上木下韌；莖內木外韌。`; q2Ok=false; }
       el.res2.style.display='block'; el.chk2.disabled=true; el.chk2.setAttribute('aria-disabled','true'); el.redo2.hidden=false; updateNext();
@@ -392,6 +403,7 @@
       const choose = new Set([...el.ms].filter(i=>i.checked).map(i=>i.value));
       const correct = new Set(['A','B']);
       const isExact = choose.size===correct.size && [...correct].every(v=>choose.has(v));
+      PT.learning.record('q3', isExact);
 
       el.rowMS.classList.add(isExact?'correct':'incorrect');
 
@@ -417,6 +429,7 @@
       el.progText.textContent=`完成度：${done}/3`;
       el.progBar.style.width=`${(done/3)*100}%`;
       const canGo = done===3;
+      PT.markReady("p1", canGo);
       el.next.classList.toggle('disabled',!canGo);
       el.next.setAttribute('aria-disabled',String(!canGo));
     }
