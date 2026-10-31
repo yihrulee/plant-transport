@@ -1,5 +1,6 @@
 /** 植物的運輸：以同一份試算表分頁儲存。替換前先保留原始 Apps Script 版本。 */
-const SPREADSHEET_ID = '11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA';
+// 部署時在私人工作副本填入目標試算表 ID，公開範本不含成績表識別碼。
+const SPREADSHEET_ID = 'SET_YOUR_SPREADSHEET_ID';
 const API_VERSION = 'plant-transport-v2';
 const ASSESSMENT_VERSION = 'transport-20-v1';
 const LEARNING_VERSION = 'attempt-321-v1';

@@ -30,7 +30,7 @@ const old=spreadsheet.insertSheet('plant-transport');
 old.rows=[['timestamp','class','seat','name','q1','q2','q3','q4'],['2026-10-30T19:44:29.031Z','原班級','01','原紀錄','原1','原2','原3','原4']];
 const originalRow=JSON.stringify(old.rows[1]);
 const gas=vm.createContext({
- SpreadsheetApp:{openById(id){assert.equal(id,'11mdNfWtMYUHrjKZyPq0JlLKKpWCZ0S5_qW7Ju75XndA');return spreadsheet;},flush(){}},
+ SpreadsheetApp:{openById(id){assert.equal(id,'SET_YOUR_SPREADSHEET_ID');return spreadsheet;},flush(){}},
  ContentService:{MimeType:{JSON:'application/json'},createTextOutput(text){return {text,setMimeType(){return this;}};}},
  LockService:{getScriptLock(){return {tryLock(){return true;},releaseLock(){}};}},
  Utilities:{formatDate(date,zone){assert.equal(zone,'Asia/Taipei');return new Intl.DateTimeFormat('sv-SE',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(date);}}
